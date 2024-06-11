@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8">
+    <title>All users</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fff;
+            color: #000;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            border: 1px solid #000;
+            table-layout: fixed;
+        }
+        thead {
+            background-color: #000;
+            color: #fff;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #000;
+            word-wrap: break-word;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #e0e0e0;
+        }
+        form {
+            text-align: center;
+        }
+        button {
+            background-color: #000;
+            color: #fff;
+            padding: 12px 20px;
+            border: 2px solid #000;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        button:hover {
+            background-color: #fff;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Author</th>
+            <th>Version</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="person : ${All}">
+            <td th:text="${ person.getName()}"></td>
+            <td th:text="${ person.getAuthor()}"></td>
+            <td th:text="${ person.getVersion()}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div>
+        <form  target="_blank">
+            <button onclick=redirectTo("http://localhost:8080/api/Welcome")>Вернуться к поиску</button>
+        </form>
+    </div>
+</div>
+<script>
+    function redirectTo(str) {
+        // Открываем новое окно
+        let newWindow = window.open(str);
+
+        // Проверяем, удалось ли открыть новое окно
+        if (newWindow) {
+            // Закрываем текущее окно
+            window.close();
+        } else {
+            alert('Unable to close the current window.');
+        }
+    }
+</script>
+</body>
+</html>

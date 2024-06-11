@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <style>
+        .image-container {
+            position: relative;
+            height: 500px; /* Высота контейнера */
+        }
+        .image {
+            position: absolute;
+            top: 50%; /* Позиционирование сверху */
+            left: 50%; /* Позиционирование слева */
+            transform: translate(-50%, -50%); /* Центрирование изображения */
+        }
+        .top-left-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #000;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .top-left-button1 {
+            position: absolute;
+            top: 120px;
+            right: 20px;
+            background-color: #000;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .top-left-button:hover,.top-left-button1:hover {
+            background-color: #fff;
+            color: #000;
+            border: 2px solid #000;
+        }
+
+    </style>
+</head>
+<body>
+<div class="image-container">
+    <input type="file" id="imageInput" accept="image/*" style="display: none;" />
+    <img id="myImage" class ="image" alt="Profile Image" />
+</div>
+<button class="top-left-button" onclick=redirectTo("http://localhost:8080/api/Welcome")>Назад</button>
+<button class="top-left-button1" onclick=redirectToDelete()>Удалить учетную запись</button>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        getId();
+    });
+    async function getId() {
+        try {
+            const response = await fetch('http://localhost:8080/api/userInfo', {
+                method: 'GET'
+            });
+
+            if (response.ok) {
+                const imagePath = await response.text();
+                if (imagePath) {
+                    const imageElement = document.getElementById('myImage');
+                    if (imageElement) {
+                        imageElement.src = 'http://localhost:8080/api/images/' + imagePath;
+                    } else {
+                        console.error('Element with id "myImage" not found.');
+                    }
+                } else {
+                    console.error('Received empty path for image.');
+                }
+            } else {
+                console.error('Server returned an error:', response.status, response.statusText);
+                alert("Error fetching user info.");
+            }
+        } catch (error) {
+            console.error('Error fetching user info:', error);
+            alert("Error fetching user info.");
+        }
+    }
+    function redirectTo(str) {
+        // Открываем новое окно
+        if(str==="http://localhost:8080/api/delete"){
+            alert('Вы уверены, что хотите удалить свою учетную запись?')
+            let windowExit = window.open("http://localhost:8080/api/logout");
+            window.close()
+            let newWindow = window.open("http://localhost:8080/api/Welcome");
+        }
+        let newWindow = window.open(str);
+
+        // Проверяем, удалось ли открыть новое окно
+        if (newWindow) {
+            // Закрываем текущее окно
+            window.close();
+        } else {
+            alert('Unable to close the current window.');
+        }
+    }
+    async function redirectToDelete() {
+        try {
+            alert('Вы уверены, что хотите удалить свою учетную запись?')
+            const response = await fetch('http://localhost:8080/api/api/delete', {
+                method: 'DELETE'
+            });
+           if(response) {
+               let windowExit = window.open("http://localhost:8080/api/logout");
+               window.close()
+           }
+
+        } catch (error) {
+            console.error('Error deleting', error);
+            alert("Error deleting.");
+        }
+    }
+</script>
+
+</body>
+</html>
