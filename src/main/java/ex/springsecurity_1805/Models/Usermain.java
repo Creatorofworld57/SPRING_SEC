@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name="UsersInSystem")
+@Table(name="Users_In_System")
 public class Usermain {
 
 

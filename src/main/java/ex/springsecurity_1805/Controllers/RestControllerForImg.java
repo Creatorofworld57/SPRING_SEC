@@ -7,7 +7,8 @@ import ex.springsecurity_1805.Models.Img;
 
 import ex.springsecurity_1805.Repositories.ImageRepository;
 import ex.springsecurity_1805.Repositories.UserRepository;
-import ex.springsecurity_1805.servisies.UserDEtailsService;
+import ex.springsecurity_1805.services.UserDEtailsService;
+
 import lombok.RequiredArgsConstructor;
 
 
@@ -31,7 +32,7 @@ public class RestControllerForImg {
     private final UserRepository repo;
 
     @GetMapping("/api/images/{id}")
-    private ResponseEntity<?> getImageById(@PathVariable Long id){
+    public ResponseEntity<?> getImageById(@PathVariable Long id){
         Img img = repository.findById(id).orElse(null);
 
         assert img != null;
@@ -43,7 +44,7 @@ public class RestControllerForImg {
     @GetMapping("/api/userInfo")
     public String userInfo(@AuthenticationPrincipal UserDEtailsService model){
 
-     Long id =  repo.findByName(model.getUsername()).get().getPreviewImageId();
+      Long id =  repo.findByName(model.getUsername()).get().getPreviewImageId();
       if(id==null)
           return "12";
       else

@@ -1,4 +1,4 @@
-package ex.springsecurity_1805.servisies;
+package ex.springsecurity_1805.services;
 
 import ex.springsecurity_1805.Repositories.UserRepository;
 import ex.springsecurity_1805.Models.Usermain;

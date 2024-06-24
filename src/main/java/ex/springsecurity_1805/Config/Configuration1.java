@@ -1,7 +1,7 @@
 package ex.springsecurity_1805.Config;
 
 
-import ex.springsecurity_1805.servisies.MyUserDetailsService;
+import ex.springsecurity_1805.services.MyUserDetailsService;
 import lombok.AllArgsConstructor;
 
 import org.springframework.context.annotation.Bean;

@@ -1,8 +1,10 @@
-package ex.springsecurity_1805.servisies;
+package ex.springsecurity_1805.services;
 
 import com.github.javafaker.Faker;
 import ex.springsecurity_1805.Models.Application;
+import ex.springsecurity_1805.Models.Audio;
 import ex.springsecurity_1805.Models.Img;
+import ex.springsecurity_1805.Repositories.AudioRepository;
 import ex.springsecurity_1805.Repositories.ImageRepository;
 import ex.springsecurity_1805.Repositories.UserRepository;
 import ex.springsecurity_1805.Models.Usermain;
@@ -27,6 +29,7 @@ public class ServiceApp {
     private UserRepository repository;
     private PasswordEncoder passwordEncoder;
     private ImageRepository imageRepository;
+    private AudioRepository audioRepository;
 
     @PostConstruct
     public void loadAppInDB() {
@@ -117,4 +120,14 @@ public class ServiceApp {
         return img;
 
     }
+
+    public void audioKeep(MultipartFile file) throws IOException {
+        Audio audio = new Audio();
+        audio.setBuffer(file.getBytes());
+        audio.setName(file.getOriginalFilename());
+        audio.setContentType(file.getContentType());
+        audio.setSize(file.getSize());
+        audioRepository.save(audio);
+    }
+
 }

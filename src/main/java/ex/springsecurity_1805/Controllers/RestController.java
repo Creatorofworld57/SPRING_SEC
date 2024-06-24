@@ -3,8 +3,8 @@ package ex.springsecurity_1805.Controllers;
 
 import ex.springsecurity_1805.Models.Usermain;
 import ex.springsecurity_1805.Models.updateModel;
-import ex.springsecurity_1805.servisies.ServiceApp;
-import ex.springsecurity_1805.servisies.UserDEtailsService;
+import ex.springsecurity_1805.services.ServiceApp;
+import ex.springsecurity_1805.services.UserDEtailsService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 

@@ -3,7 +3,7 @@ package ex.springsecurity_1805.Controllers;
 
 
 
-import ex.springsecurity_1805.servisies.ServiceApp;
+import ex.springsecurity_1805.services.ServiceApp;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -29,25 +29,14 @@ public class ControllerF {
     @GetMapping("/{id}")
     public String view (@PathVariable int id, Model model){
         List<String> lst = new ArrayList<>();
-        lst.add("Id: "+ serviceApp.applicationById(id).getId());
+        lst.add(STR."Id: \{serviceApp.applicationById(id).getId()}");
         lst.add("Name: "+ serviceApp.applicationById(id).getName());
-        lst.add("Author: "+serviceApp.applicationById(id).getAuthor());
-        lst.add("Version: "+serviceApp.applicationById(id).getVersion());
+        lst.add("Author: "+ serviceApp.applicationById(id).getAuthor());
+        lst.add("Version: "+ serviceApp.applicationById(id).getVersion());
         model.addAttribute("list",lst);
         return "id";
     }
-    @PreAuthorize("hasAuthority('ROLE_USER')")
-    @GetMapping("/name/{name}")
-    public String view1 (String name,Model model){
-        List<String> lst = new ArrayList<>();
-        lst.add("Id: "+ serviceApp.applicationByName(name).getId());
-        lst.add("Name: "+ serviceApp.applicationByName(name).getName());
-        lst.add("Author: "+serviceApp.applicationByName(name).getAuthor());
-        lst.add("Version: "+serviceApp.applicationByName(name).getVersion());
-        model.addAttribute("list",lst);
-        return "id";
 
-    }
 
     @GetMapping("/newUser")
     public String addUser(){
@@ -74,6 +63,17 @@ public class ControllerF {
     public String profile(){
         return "Profile";
     }
+
+    @GetMapping("/audio")
+    public String audio(){
+        return "Audio";
+    }
+
+    @GetMapping("/audioList")
+    public String audioList(){
+        return "audioList";
+    }
+
 
 
 }
