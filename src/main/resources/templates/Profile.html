@@ -157,7 +157,7 @@
     async function redirectToDelete() {
         try {
             alert('Вы уверены, что хотите удалить свою учетную запись?')
-            const response = await fetch('http://localhost:8080/api/api/delete', {
+            const response = await fetch('http://localhost:8080/api/user', {
                 method: 'DELETE'
             });
            if(response) {

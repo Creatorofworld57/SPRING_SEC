@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration</title>
+    <title>Update Placeholder</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -60,11 +60,6 @@
             left: 0;
             cursor: pointer;
         }
-        .file-input-container input[type="file"]:hover{
-            background-color: #fff;
-            color: #000;
-            border: 2px solid #000;
-        }
         .file-input-label {
             display: flex;
             align-items: center;
@@ -101,48 +96,37 @@
     </style>
 </head>
 <body>
-
 <div class="form-container">
     <h1>Enter Data</h1>
-    <form id="userForm" action="/api/user" method="post" enctype="multipart/form-data">
-        <input type="text" id="name" name="name" placeholder="Enter your Name" required>
-        <input type="password" id="password" name="password" placeholder="Enter your Password" required>
-
-        <div class="file-input-container">
-            <label class="file-input-label" for="file">Выберите новый аватар</label>
-            <input type="file" id="file" name="file" required>
-        </div>
-        <button type="button" onclick="sendData()">Send</button>
+    <form id="userForm">
+        <input type="text" id="name" name="name" placeholder="Enter  Name" required>
+        <button id="but" onclick="send()">Send</button>
     </form>
+    <button class="Back" onclick="window.location.href='http://localhost:8080/api/Welcome'">Назад</button>
 </div>
-<button class="Back" onclick="window.location.href='http://localhost:8080/api/Profile'">Назад</button>
-
 <script>
-    async function sendData() {
-        const form = document.getElementById('userForm');
-        const formData = new FormData(form);
+    
+       async function send(){
+           const userName = document.getElementById('name').value;
+           const place = document.getElementById('name')
+           const data = {
 
-        const json = JSON.stringify({
-            name: form.name.value,
-            password: form.password.value
-        });
-        formData.append('json', new Blob([json], { type: 'application/json' }));
+                   username: userName
+               };
 
-        const response = await fetch('http://localhost:8080/api/user', {
-            method: 'PATCH',
-            body: formData
-        });
+               const response = await fetch('http://localhost:8080/api/secret/'+`${userName}`, {
+                   method: 'GET',
 
-        if (response.ok) {
-            alert('Data sent successfully!');
-            window.location.href = 'http://localhost:8080/api/Welcome';
-        } else {
-            alert('Failed to send data.');
+               });
+               
+                    if (response.ok) {
+                        place.placeholder=response.text();
+                    } else {
+                        alert('Ошибка при отправке данных');
+                    }
+                
+           
         }
-    }
 </script>
-
-
 </body>
 </html>
-

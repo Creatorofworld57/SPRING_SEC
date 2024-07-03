@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class UserDEtailsService implements UserDetails {
 
-    private Usermain user;
+    final private  Usermain user;
     public UserDEtailsService(Usermain user){
         this.user=user;
     }

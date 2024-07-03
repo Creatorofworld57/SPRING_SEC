@@ -1,8 +1,6 @@
 package ex.springsecurity_1805.Controllers;
 
 
-
-
 import ex.springsecurity_1805.services.ServiceApp;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,60 +18,67 @@ import java.util.List;
 @AllArgsConstructor
 public class ControllerF {
     private ServiceApp serviceApp;
+
     @GetMapping("/Welcome")
     public String welcome() {
         return "Welcome";
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('SUPERVISIOR')")
     @GetMapping("/{id}")
-    public String view (@PathVariable int id, Model model){
+    public String view(@PathVariable int id, Model model) {
         List<String> lst = new ArrayList<>();
         lst.add(STR."Id: \{serviceApp.applicationById(id).getId()}");
-        lst.add("Name: "+ serviceApp.applicationById(id).getName());
-        lst.add("Author: "+ serviceApp.applicationById(id).getAuthor());
-        lst.add("Version: "+ serviceApp.applicationById(id).getVersion());
-        model.addAttribute("list",lst);
+        lst.add("Name: " + serviceApp.applicationById(id).getName());
+        lst.add("Author: " + serviceApp.applicationById(id).getAuthor());
+        lst.add("Version: " + serviceApp.applicationById(id).getVersion());
+        model.addAttribute("list", lst);
         return "id";
     }
 
 
     @GetMapping("/newUser")
-    public String addUser(){
-       return "NewUser";
+    public String addUser() {
+        return "NewUser";
     }
 
     @GetMapping("/All")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public String All(Model model){
-        model.addAttribute("All",serviceApp.allApplications());
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('SUPERVISIOR')")
+    public String All(Model model) {
+        model.addAttribute("All", serviceApp.allApplications());
         return "All";
     }
+
     @GetMapping("/update")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public String update(){
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('SUPERVISIOR')")
+    public String update() {
         return "Update2";
     }
+
     @GetMapping("/login")
     public String login() {
         return "login";
     }
 
     @GetMapping("/Profile")
-    public String profile(){
+    public String profile() {
         return "Profile";
     }
 
     @GetMapping("/audio")
-    public String audio(){
+    public String audio() {
         return "Audio";
     }
 
     @GetMapping("/audioList")
-    public String audioList(){
+    public String audioList() {
         return "audioList";
     }
-
+    @PreAuthorize("hasAuthority('SUPERVISIOR')")
+    @GetMapping("/security")
+    public String security() {
+        return "Security";
+    }
 
 
 }

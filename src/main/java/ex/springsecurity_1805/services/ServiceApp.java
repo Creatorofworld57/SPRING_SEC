@@ -9,17 +9,19 @@ import ex.springsecurity_1805.Repositories.ImageRepository;
 import ex.springsecurity_1805.Repositories.UserRepository;
 import ex.springsecurity_1805.Models.Usermain;
 import jakarta.annotation.PostConstruct;
+
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.IntStream;
-
-
 
 
 @Service
@@ -57,18 +59,25 @@ public class ServiceApp {
 
     public Application applicationByName(String name) {
         return applicationList.stream()
-                .filter(app -> app.getName() == name)
+                .filter(app -> Objects.equals(app.getName(), name))
                 .findFirst().orElse(null);
     }
 
-    public void addUser(Usermain user, MultipartFile file) throws IOException {
+    public void addUser(HttpServletRequest request, MultipartFile file) throws IOException {
         Img img = new Img();
+        Usermain user = new Usermain();
+        user.setName(request.getParameter("name"));
+        user.setPassword(request.getParameter("password"));
+        user.setRoles(request.getParameter("roles"));
+
         if (file != null && file.getSize() != 0) {
             img = toImgEntity(file);
             img.setPreview(true);
             user.addImgToProduct(img);
         }
-
+        Date date = new Date();
+        user.setUpdated(date);
+        user.setCreated(date);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Usermain userok = repository.save(user);
         Img img1 = imageRepository.save(img);
@@ -77,10 +86,12 @@ public class ServiceApp {
 
     }
 
-
+@Transactional
     public void updateUser(String name, String password, MultipartFile file, UserDEtailsService model) throws IOException {
 
         Img img2;
+        //переписать
+
         Long id = repository.findByName(model.getUsername()).get().getId();
         if (file != null && file.getSize() != 0) {
             img2 = toImgEntity(file);
@@ -101,13 +112,36 @@ public class ServiceApp {
             repository.getReferenceById(id).setPassword(passwordEncoder.encode(password));
         if (name != null)
             repository.getReferenceById(id).setName(name);
+        Date data = new Date();
+        repository.getReferenceById(id).setUpdated(data);
 
         repository.save(repository.getReferenceById(id));
     }
-    @Transactional
-    public void deleteUser(UserDEtailsService model){
-        repository.delete(repository.findByName(model.getUsername()).get());
 
+
+    @Transactional
+    public void deleteUser(UserDEtailsService model) {
+        try {
+            Optional<Usermain> userOpt = repository.findByName(model.getUsername());
+
+            if (userOpt.isPresent()) {
+                Usermain user = userOpt.get();
+                Long previewImageId = user.getPreviewImageId();
+
+                if (previewImageId != null) {
+                    Img image = imageRepository.findById(previewImageId)
+                            .orElseThrow(() -> new RuntimeException("Image not found"));
+                    image.setUser(null);
+                    user.setPreviewImageId(null);
+                    imageRepository.delete(image);
+                }
+
+                repository.delete(user);
+
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException("Ошибка при удалении пользователя: " + ex.getMessage(), ex);
+        }
     }
 
     private Img toImgEntity(MultipartFile file) throws IOException {

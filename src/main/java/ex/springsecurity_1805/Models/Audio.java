@@ -14,7 +14,7 @@ public class Audio {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Lob
-    @Basic(fetch=FetchType.LAZY, optional=true)
+    @Basic(fetch=FetchType.LAZY)
     private byte[] buffer;
     private String name;
     private String ContentType;

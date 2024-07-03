@@ -60,11 +60,6 @@
             left: 0;
             cursor: pointer;
         }
-        .file-input-container input[type="file"]:hover{
-            background-color: #fff;
-            color: #000;
-            border: 2px solid #000;
-        }
         .file-input-label {
             display: flex;
             align-items: center;
@@ -101,10 +96,9 @@
     </style>
 </head>
 <body>
-
 <div class="form-container">
     <h1>Enter Data</h1>
-    <form id="userForm" action="/api/newUserPost" method="post" enctype="multipart/form-data">
+    <form id="userForm" method="POST" enctype="multipart/form-data">
         <input type="text" id="name" name="name" placeholder="Enter your Name" required>
         <input type="password" id="password" name="password" placeholder="Enter your Password" required>
         <input type="text" id="roles" name="roles" placeholder="Enter your Role" required>
@@ -112,37 +106,38 @@
             <label class="file-input-label" for="file">Выберите аватар</label>
             <input type="file" id="file" name="file" required>
         </div>
-        <button type="button" onclick="sendData()">Send</button>
+        <button id="but" type="submit">Send</button>
     </form>
 </div>
 <button class="Back" onclick="window.location.href='http://localhost:8080/api/Welcome'">Назад</button>
-
 <script>
-    async function sendData() {
+    document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('userForm');
-        const formData = new FormData(form);
 
-        const json = JSON.stringify({
-            name: form.name.value,
-            password: form.password.value,
-            roles: form.roles.value
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // предотвращаем стандартное поведение отправки формы
+
+            const formData = new FormData(form);
+
+            fetch('http://localhost:8080/api/user', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = 'http://localhost:8080/api/Welcome';
+                    } else {
+                        // обработка ошибок
+                        alert('Ошибка при отправке данных');
+                    }
+                })
+                .catch(error => {
+                    // обработка ошибок сети или других ошибок
+                    console.error('Error:', error);
+                    alert('Ошибка при отправке данных');
+                });
         });
-        formData.append('json', new Blob([json], { type: 'application/json' }));
-
-        const response = await fetch('http://localhost:8080/api/newUserPost', {
-            method: 'POST',
-            body: formData
-        });
-
-        if (response.ok) {
-            alert('Data sent successfully!');
-            window.location.href = 'http://localhost:8080/api/Welcome';
-        } else {
-            alert('Failed to send data.');
-        }
-    }
+    });
 </script>
-
-
 </body>
 </html>

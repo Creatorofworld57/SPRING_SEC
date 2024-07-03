@@ -25,7 +25,7 @@ public class Img  {
     private byte[] bytes;
 
 
-    @ManyToOne(cascade = CascadeType.REFRESH,fetch=FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.REFRESH,fetch=FetchType.EAGER)
     private Usermain user;
 
 

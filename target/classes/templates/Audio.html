@@ -7,7 +7,7 @@
 <body>
 <div class="form-container">
     <h1>Enter Data</h1>
-    <form id="userForm" action="/api/newUserPost" method="post" enctype="multipart/form-data">
+    <form id="userForm" action="/api/user" method="post" enctype="multipart/form-data">
         <div class="file-input-container">
             <label class="file-input-label" for="file">Выберите трек</label>
             <input type="file" id="file" name="file" required>
@@ -19,7 +19,7 @@
     async function sendData() {
         const form = document.getElementById('userForm');
         const formData = new FormData(form);
-        const response = await fetch('http://localhost:8080/api/audioSend', {
+        const response = await fetch('http://localhost:8080/api/audio', {
             method: 'POST',
             body: formData
         });

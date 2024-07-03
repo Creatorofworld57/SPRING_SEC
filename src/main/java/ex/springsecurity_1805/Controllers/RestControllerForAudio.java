@@ -18,6 +18,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Objects;
+
 @EnableWebMvc
 @RestController
 @RequestMapping("/api")
@@ -26,7 +28,7 @@ public class RestControllerForAudio {
     private final AudioRepository audioRepository;
 
     @Transactional
-    @GetMapping("/audioGet/{id}")
+    @GetMapping("/audio/{id}")
     public ResponseEntity<?> getAudio(@PathVariable Long id) {
 
         Audio audio = audioRepository.getReferenceById(id);
@@ -39,21 +41,32 @@ public class RestControllerForAudio {
 
     }
 
-    @PostMapping("/audioSend")
+    @PostMapping("/audio")
     public void audioSend(@RequestParam("file") MultipartFile file) throws IOException {
         Audio audio = new Audio();
 
+        StringBuilder str = new StringBuilder(Objects.requireNonNull(file.getOriginalFilename()));
+        str.delete(str.indexOf("."),str.lastIndexOf("3"));
+
         audio.setBuffer(file.getBytes());
-        audio.setName(file.getOriginalFilename());
+        audio.setName(str.toString());
+
         audio.setContentType(file.getContentType());
         audio.setSize(file.getSize());
         audioRepository.save(audio);
     }
     @GetMapping("/audioName/{id}")
     public String audioName(@PathVariable Long id){
-        return audioRepository.findAudioById(id).get().getName();
+        if(audioRepository.findAudioById(id).isPresent())
+            return audioRepository.findAudioById(id).get().getName();
+        else
+            return "Track";
     }
+    @GetMapping("/audioCount")
+    public String audioCount() {
+        long counter = audioRepository.count();
+        return Long.toString(counter);
 
-
+    }
 
 }

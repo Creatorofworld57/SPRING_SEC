@@ -1,11 +1,13 @@
 package ex.springsecurity_1805.Config;
 
 
+import ex.springsecurity_1805.Repositories.UserRepository;
 import ex.springsecurity_1805.services.MyUserDetailsService;
 import lombok.AllArgsConstructor;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -28,12 +30,13 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 @AllArgsConstructor
 public class Configuration1{
+    UserRepository repository;
     @Bean
     public UserDetailsService userDetailsService(){
        /* UserDetails admin0 = User.builder().username("admin0").password(encoder.encode("52")).roles("ADMIN").build();
         UserDetails admin1 = User.builder().username("admin1").password(encoder.encode("703.747")).roles("USER").build();
         UserDetails admin2 = User.builder().username("admin2").password(encoder.encode("18")).roles("USER").build();*/
-     return new MyUserDetailsService();
+     return new MyUserDetailsService(repository);
     }
     @Bean
     static public PasswordEncoder passwordEncoder(){
@@ -42,7 +45,7 @@ public class Configuration1{
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
          http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth->auth.requestMatchers("api/Welcome","/api/login","/api/updateData","/api/newUserPost").permitAll()
+                .authorizeHttpRequests(auth->auth.requestMatchers("api/Welcome","/api/login","/api/user").permitAll()
                                 .requestMatchers("/api/newUser").anonymous()
                 .requestMatchers("/api/**").authenticated()
                         )

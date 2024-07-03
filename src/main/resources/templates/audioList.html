@@ -22,7 +22,7 @@
             top: 70px;
             left: 10px;
         }
-        .button0 {
+        .button {
             position: absolute;
             top: 140px;
             left: 170px;
@@ -48,7 +48,20 @@
             font-size: 16px;
             transition: background-color 0.3s, color 0.3s;
         }
-        .button0:hover,.button1:hover {
+        .top-left-button{
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #000;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        button:hover,.button1:hover,.top-left-button:hover {
             background-color: #fff;
             color: #000;
             border: 2px solid #000;
@@ -63,8 +76,9 @@
 </audio>
 
 <div>
-    <button type="button" class="button0" id="first" onclick="fetch()">Следующий</button>
-    <button type="button" class="button1" id="second" onclick="fetcho()">Предыдущий</button>
+    <button type="button" class="button" id="first" onclick="nextAudio()">Следующий</button>
+    <button type="button" class="button1" id="second" onclick="prevAudio()">Предыдущий</button>
+    <button class="top-left-button" onclick=redirectTo("http://localhost:8080/api/Welcome")>Назад</button>
 </div>
 
 <div class="form-container">
@@ -78,12 +92,12 @@
         loadAudio(counter);
     });
 
-    async function fetch() {
+    async function nextAudio() {
         counter += 50;
         await loadAudio(counter);
     }
 
-    async function fetcho() {
+    async function prevAudio() {
         if (counter !== 152) {
             counter -= 50;
             await loadAudio(counter);
@@ -91,7 +105,7 @@
     }
 
     async function loadAudio(counter) {
-        const audioUrl = `http://localhost:8080/api/audioGet/${counter}`;
+        const audioUrl = `http://localhost:8080/api/audio/${counter}`;
         const audioType = 'audio/mp3';
 
         // Получаем элемент аудио по его id
@@ -111,22 +125,42 @@
         audioElement.appendChild(sourceElement);
 
         // Устанавливаем название трека (если есть)
-       // const name = document.getElementById('header-value')
-        //const response = await fetch('http://localhost:8080/api/audioName/'+counter, {
-          //  method: 'GET'
-        //});
-        //name.textContent=response.text();
-        // Перезагружаем аудио для его воспроизведения с новым источником
-        audioElement.load();
-        audioElement.play();
-        audioElement.volume = 0.3;
+        const name = document.getElementById('header-value');
+        try {
+            const response = await fetch(`http://localhost:8080/api/audioName/${counter.toString()}`, { method: 'GET' });
 
+            name.textContent = await response.text();
+        } catch (error) {
+            console.error('Error fetching audio name:', error);
+            name.textContent = 'Error loading header';
+        }
+
+        // Перезагружаем аудио для его воспроизведения с новым источником
+        try {
+            audioElement.load();
+            audioElement.play();
+            audioElement.volume = 0.3;
+        } catch (error) {
+            console.error('Error playing audio:', error);
+        }
     }
 
     // Добавляем обработчик события 'ended'
     const audioElement = document.getElementById('myAudio');
-    audioElement.addEventListener('ended', fetch);
+    audioElement.addEventListener('ended', nextAudio);
+    function redirectTo(str) {
+        // Открываем новое окно
 
+        let newWindow = window.open(str);
+
+        // Проверяем, удалось ли открыть новое окно
+        if (newWindow) {
+            // Закрываем текущее окно
+            window.close();
+        } else {
+            alert('Unable to close the current window.');
+        }
+    }
 </script>
 
 </body>

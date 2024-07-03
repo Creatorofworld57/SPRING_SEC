@@ -9,6 +9,6 @@ import java.util.Optional;
 @Transactional
 @Repository
 public interface AudioRepository extends JpaRepository<Audio,Long> {
-    Optional<Audio> findByName(String name);
+
     Optional<Audio> findAudioById(Long id);
 }
