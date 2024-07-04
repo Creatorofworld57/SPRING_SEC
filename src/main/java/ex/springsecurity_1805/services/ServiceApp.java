@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -86,36 +87,39 @@ public class ServiceApp {
 
     }
 
-@Transactional
+    @Transactional
     public void updateUser(String name, String password, MultipartFile file, UserDEtailsService model) throws IOException {
-
         Img img2;
-        //переписать
+        Optional<Usermain> optUser = repository.findByName(model.getUsername());
+        if (optUser.isPresent()) {
+            Usermain user = optUser.get();
 
-        Long id = repository.findByName(model.getUsername()).get().getId();
-        if (file != null && file.getSize() != 0) {
-            img2 = toImgEntity(file);
-            img2.setPreview(true);
-            repository.getReferenceById(id).addImgToProduct(img2);
+            if (file != null && file.getSize() != 0) {
+                img2 = toImgEntity(file);
+                img2.setPreview(true);
 
-            Long ImageId = repository.getReferenceById(id).getPreviewImageId();
-            imageRepository.getReferenceById(ImageId).setName(img2.getName());
-            imageRepository.getReferenceById(ImageId).setOriginalFileName(img2.getOriginalFileName());
-            imageRepository.getReferenceById(ImageId).setContentType(img2.getContentType());
-            imageRepository.getReferenceById(ImageId).setBytes(img2.getBytes());
-            imageRepository.getReferenceById(ImageId).setSize(img2.getSize());
+                user.addImgToProduct(img2);
+                Optional<Img> optImg = imageRepository.findById(user.getPreviewImageId());
+                if (optImg.isPresent()) {
+                    Img img = optImg.get();
 
-            imageRepository.save(imageRepository.getReferenceById(ImageId));
+                    img.setName(img2.getName());
+                    img.setOriginalFileName(img2.getOriginalFileName());
+                    img.setContentType(img2.getContentType());
+                    img.setBytes(img2.getBytes());
+                    img.setSize(img2.getSize());
 
+                    imageRepository.save(img);
+                }
+            }
+            if (password != null)
+                user.setPassword(passwordEncoder.encode(password));
+            if (name != null)
+                user.setName(name);
+            Date data = new Date();
+            user.setUpdated(data);
+            repository.save(user);
         }
-        if (password != null)
-            repository.getReferenceById(id).setPassword(passwordEncoder.encode(password));
-        if (name != null)
-            repository.getReferenceById(id).setName(name);
-        Date data = new Date();
-        repository.getReferenceById(id).setUpdated(data);
-
-        repository.save(repository.getReferenceById(id));
     }
 
 
