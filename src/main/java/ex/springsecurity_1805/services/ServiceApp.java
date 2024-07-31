@@ -13,6 +13,9 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -125,6 +128,7 @@ public class ServiceApp {
 
     @Transactional
     public void deleteUser(UserDEtailsService model) {
+        System.out.println("delete");
         try {
             Optional<Usermain> userOpt = repository.findByName(model.getUsername());
 
@@ -166,6 +170,16 @@ public class ServiceApp {
         audio.setContentType(file.getContentType());
         audio.setSize(file.getSize());
         audioRepository.save(audio);
+    }
+    public static UserDetails getCurrentUser() {
+        return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+    public String getUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
+            return userDetails.getUsername();
+        }
+        return null;
     }
 
 }

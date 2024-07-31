@@ -7,8 +7,11 @@ import ex.springsecurity_1805.Models.Img;
 import ex.springsecurity_1805.Models.Usermain;
 import ex.springsecurity_1805.Repositories.ImageRepository;
 import ex.springsecurity_1805.Repositories.UserRepository;
+
+import ex.springsecurity_1805.services.ServiceApp;
 import ex.springsecurity_1805.services.UserDEtailsService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 
@@ -18,21 +21,23 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.ByteArrayInputStream;
 import java.util.Optional;
-
+@CrossOrigin(origins="https://localhost:3000/profile",allowCredentials = "true")
 @RestController
 @RequiredArgsConstructor
 public class RestControllerForImg {
     private final ImageRepository repository;
-
     private final UserRepository repo;
+    private final ServiceApp serviceApp;
 
-    @GetMapping("/api/images/{id}")
+    @GetMapping("api/images/{id}")
     public ResponseEntity<?> getImageById(@PathVariable Long id) {
         Img img = repository.findById(id).orElse(null);
 
@@ -43,20 +48,26 @@ public class RestControllerForImg {
                 .body(new InputStreamResource(new ByteArrayInputStream(img.getBytes())));
     }
 
-    @GetMapping("/api/userInfo")
-    public String userInfo(@AuthenticationPrincipal UserDEtailsService model) {
-        Optional<Usermain> userOpt = repo.findByName(model.getUsername());
-        Long id;
+    @GetMapping("api/userInfo")
+    public String userInfo(@AuthenticationPrincipal UserDEtailsService s) {
+
+        if (s == null) {
+            return "16";
+        }
+
+
+        Optional<Usermain> userOpt = repo.findByName(s.getUsername());
+        Long id = null;
+
         if (userOpt.isPresent()) {
             Usermain user = userOpt.get();
             id = user.getPreviewImageId();
         }
-        else
-            id=null;
 
-        if (id == null)
-            return "12";
-        else
+        if (id == null) {
+            return "16";
+        } else {
             return id.toString();
+        }
     }
 }

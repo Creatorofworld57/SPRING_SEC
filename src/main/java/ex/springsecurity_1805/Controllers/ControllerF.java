@@ -19,10 +19,11 @@ import java.util.List;
 public class ControllerF {
     private ServiceApp serviceApp;
 
-    @GetMapping("/Welcome")
+   @GetMapping("/Welcome")
     public String welcome() {
         return "Welcome";
     }
+
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('SUPERVISIOR')")
     @GetMapping("/{id}")
@@ -35,7 +36,6 @@ public class ControllerF {
         model.addAttribute("list", lst);
         return "id";
     }
-
 
     @GetMapping("/newUser")
     public String addUser() {
@@ -53,11 +53,6 @@ public class ControllerF {
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('SUPERVISIOR')")
     public String update() {
         return "Update2";
-    }
-
-    @GetMapping("/login")
-    public String login() {
-        return "login";
     }
 
     @GetMapping("/Profile")

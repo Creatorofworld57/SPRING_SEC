@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Optional;
-
+@CrossOrigin(origins="https://localhost:3000/",allowCredentials = "true")
 @org.springframework.web.bind.annotation.RestController
 @AllArgsConstructor
 @RequestMapping("/api")

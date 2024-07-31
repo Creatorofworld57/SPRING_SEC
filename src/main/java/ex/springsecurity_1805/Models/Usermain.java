@@ -1,5 +1,6 @@
 package ex.springsecurity_1805.Models;
 
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -24,6 +25,8 @@ public class Usermain {
     private Date created;
 
     private Date updated;
+
+
 
 
     public void addImgToProduct(Img img){

@@ -116,7 +116,7 @@
     }
     async function getId() {
         try {
-            const response = await fetch('http://localhost:8080/api/userInfo', {
+            const response = await fetch('https://localhost:8080/userInfo', {
                 method: 'GET'
             });
 
@@ -125,7 +125,7 @@
                 if (imagePath) {
                     const imageElement = document.getElementById('myImage');
                     if (imageElement) {
-                        imageElement.src = 'http://localhost:8080/api/images/' + imagePath;
+                        imageElement.src = 'https://localhost:8080/images/' + imagePath;
                     } else {
                         console.error('Element with id "myImage" not found.');
                     }
