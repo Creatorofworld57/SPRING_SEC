@@ -13,10 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@Controller
-@RequestMapping("/api")
-@AllArgsConstructor
+
+
+
 public class ControllerF {
+    /*
     private ServiceApp serviceApp;
 
    @GetMapping("/Welcome")
@@ -74,6 +75,6 @@ public class ControllerF {
     public String security() {
         return "Security";
     }
-
+*/
 
 }

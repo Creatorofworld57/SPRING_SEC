@@ -8,10 +8,9 @@ import ex.springsecurity_1805.Models.Usermain;
 import ex.springsecurity_1805.Repositories.ImageRepository;
 import ex.springsecurity_1805.Repositories.UserRepository;
 
-import ex.springsecurity_1805.services.ServiceApp;
+
 import ex.springsecurity_1805.services.UserDEtailsService;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 
@@ -21,7 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,7 +34,7 @@ import java.util.Optional;
 public class RestControllerForImg {
     private final ImageRepository repository;
     private final UserRepository repo;
-    private final ServiceApp serviceApp;
+
 
     @GetMapping("api/images/{id}")
     public ResponseEntity<?> getImageById(@PathVariable Long id) {
