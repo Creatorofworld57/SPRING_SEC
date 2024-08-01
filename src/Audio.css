@@ -1,0 +1,57 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+
+
+#header-value {
+    font-size: 1.5em;
+    color: black;
+    align-self: center;
+    margin-top: 20px;
+}
+
+audio {
+    display: block;
+    margin: 20px auto;
+    width: 80%;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 300px;
+}
+
+.button10, .button11 {
+    background-color: #000;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.button10 {
+    order: 1;
+}
+
+.button11 {
+    order: 2;
+}
+
+.top-left-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.button10:hover, .button11:hover, .top-left-button:hover {
+    background-color: #fff;
+    color: #000;
+    border: 2px solid #000;
+}
