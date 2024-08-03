@@ -10,6 +10,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -34,6 +35,7 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 @AllArgsConstructor
+
 public class Configuration1{
     UserRepository repository;
     @Bean
@@ -51,12 +53,13 @@ public class Configuration1{
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/Welcome", "api/login", "/api/user", "/api/audio/**", "/api/audioName/**","/api/images/**").permitAll() // Разрешить доступ без аутентификации
+                        .requestMatchers( "api/login", "/api/audio/**", "/api/audioName/**","api/authorization","api/checking").permitAll()
+                        .requestMatchers(HttpMethod.POST, "https:/localhost:8080/api/user").permitAll()// Разрешить доступ без аутентификации
                         .requestMatchers("/newUser").anonymous() // Доступно только анонимным пользователям
                         .requestMatchers("/api/**").authenticated()
                                 .requestMatchers("https://localhost:3000/profile").authenticated()
-                                .requestMatchers("/ws/**").permitAll()// Требует аутентификации
-                        // Разрешить доступ к любым другим URL
+                                .requestMatchers("/ws/**").permitAll()
+
                 )
                 .formLogin(formLogin -> formLogin
                         .loginPage("https://localhost:3000/login") // Путь к странице логина

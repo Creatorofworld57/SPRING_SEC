@@ -41,7 +41,7 @@ public class RestControllerForImg {
         Img img = repository.findById(id).orElse(null);
 
         assert img != null;
-        return ResponseEntity.ok().header("fileName", img.getOriginalFileName())
+        return ResponseEntity.ok()
                 .contentType(MediaType.valueOf(img.getContentType()))
                 .contentLength(img.getSize())
                 .body(new InputStreamResource(new ByteArrayInputStream(img.getBytes())));
