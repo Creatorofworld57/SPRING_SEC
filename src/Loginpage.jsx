@@ -1,7 +1,7 @@
 // LoginPage.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Loginpage.css';
+import './Styles/Loginpage.css';
 
 const Loginpage = () => {
   const navigate = useNavigate();
@@ -46,7 +46,9 @@ const Loginpage = () => {
           </button>
         </div>
       </form>
-    </div>
+
+        <a className="reg_ref" onClick={()=>redirectTo('/reg')}>I haven't account</a>
+      </div>
   );
 };
 

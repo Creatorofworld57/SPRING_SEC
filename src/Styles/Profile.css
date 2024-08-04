@@ -1,0 +1,193 @@
+body {
+    background-color: #2e2e2e; /* Темно-серый цвет */
+    color: #ffffff; /* Белый цвет текста для контраста */
+    font-family: Arial, sans-serif; /* Шрифт для текста */
+    margin: 0; /* Удалить отступы по умолчанию */
+    padding: 0; /* Удалить внутренние отступы по умолчанию */
+    text-align: center; /* Центрирование текста */
+}
+
+.back_up {
+    position: fixed; /* фиксируем положение кнопки */
+    bottom: 20px;       /* расположение сверху */
+    left: 10px;      /* расположение слева */
+    z-index: 1001;   /* чтобы кнопка была выше других элементов */
+    background-color: #000; /* цвет фона */
+    color: #fff;     /* цвет текста */
+    border: none;    /* убрать границы */
+    padding: 10px 20px; /* внутренние отступы */
+    border-radius: 5px; /* закругленные края */
+    cursor: pointer; /* указатель мыши */
+}
+
+nav {
+    width: 100%;
+    height: 50px;
+    background-color: black;
+    position: fixed;
+    z-index: 1000;
+    display: flex;
+    top:0px;
+    right: 0px;
+}
+
+.sun {
+    background-color: white;
+}
+
+main {
+    padding: 50px;
+}
+
+p {
+    margin: 20px;
+}
+
+.burger-btn {
+    width: 30px;
+    height: 30px;
+    margin-left: 1800px;
+    position: relative;
+}
+
+.burger-btn.active {
+    transform: rotate(180deg);
+    transition-duration: 1s;
+}
+
+.burger-btn span {
+    position: absolute;
+    top: 19px;
+    width: 30px;
+    background-color: white;
+    height: 2px;
+}
+
+.deva {
+    transform: rotate(180deg);
+    transition-duration: 1s;
+}
+
+.deva.active {
+    transform: rotate(-180deg);
+    transition-duration: 1s;
+}
+
+.burger-btn:before, .burger-btn.active:before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    width: 30px;
+    background-color: white;
+    height: 2px;
+}
+
+.burger-btn:after, .burger-btn.active:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 30px;
+    background-color: white;
+    height: 2px;
+}
+
+.toggle-switch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px;
+}
+
+/* Скрываем стандартный чекбокс */
+.toggle-input {
+    display: none;
+}
+
+/* Стиль для лейбла переключателя */
+.toggle-label {
+    cursor: pointer;
+    width: 60px;
+    height: 34px;
+    background-color: #ccc;
+    border-radius: 34px;
+    position: relative;
+    transition: background-color 0.3s;
+}
+
+/* Стиль для ползунка переключателя */
+.toggle-label::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+
+/* Состояние переключателя в положении "включено" */
+.toggle-input:checked + .toggle-label {
+    background-color: black;
+}
+
+/* Ползунок переключателя при активном состоянии */
+.toggle-input:checked + .toggle-label::before {
+    transform: translateX(26px);
+}
+
+.formForSocials {
+    position: fixed; /* фиксируем положение кнопки */
+    top: 100px;       /* расположение сверху */
+    left: 10px;      /* расположение слева */
+    z-index: 1001;   /* чтобы кнопка была выше других элементов */
+    background-color: #000;
+    height: 90px; /* цвет фона */
+    color: #fff;     /* цвет текста */
+    border: none;    /* убрать границы */
+    padding: 10px 20px; /* внутренние отступы */
+}
+
+.hj {
+
+}
+
+.inputFor {
+
+}
+
+.link-preview {
+    position: fixed; /* фиксируем положение кнопки */
+    top: 70px;       /* расположение сверху */
+    left: 10px;      /* расположение слева */
+    z-index: 1001;   /* чтобы кнопка была выше других элементов */
+    background-color: #24292e; /* Цвет фона */
+    padding: 10px;
+    border-radius: 5px;
+    display: inline-block;
+    font-family: 'Arial', sans-serif;
+}
+
+.link-preview a, .link-preview1 a {
+    color: #58a6ff; /* Цвет ссылки */
+    text-decoration: none;
+    transition: color 0.3s, text-decoration 0.3s; /* Плавный переход цвета и подчёркивания */
+}
+
+.link-preview a:hover, .link-preview1 a:hover {
+     /* Цвет ссылки при наведении */
+    text-decoration: underline;
+}
+
+.link-preview1 {
+    position: fixed; /* фиксируем положение кнопки */
+    top: 120px;       /* расположение сверху */
+    left: 10px;      /* расположение слева */
+    z-index: 1001;   /* чтобы кнопка была выше других элементов */
+    background-color: #24292e; /* Цвет фона */
+    padding: 10px;
+    border-radius: 5px;
+    display: inline-block;
+    font-family: 'Arial', sans-serif;
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './Audio.css'; // Импортируйте созданный CSS файл
+import './Styles/Audio.css'; // Импортируйте созданный CSS файл
 import { useNavigate } from 'react-router-dom';
 
 const AudioPlayer = () => {
@@ -89,7 +89,7 @@ const AudioPlayer = () => {
         <div>
           <button type="button" className="button10" id="first" onClick={nextAudio}>Следующий</button>
           <button type="button" className="button11" id="second" onClick={prevAudio}>Предыдущий</button>
-          <button className="top-left-button" onClick={() => redirectTo('/')}>Назад</button>
+         <button className="top-left-button" onClick={() => redirectTo('/')}>Назад</button>
         </div>
         <div className="form-container">
           <div id="header-value">{header}</div>

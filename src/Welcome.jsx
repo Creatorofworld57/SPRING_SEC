@@ -1,72 +1,101 @@
-// LoginPage.jsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Welcome.css';
+import './Styles/Welcome.css';
+
 
 const Welcome = () => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
+    const [isButtonVisible, setButtonVisible] = useState(true);
 
-  const redirectToUrl = () => {
-    const userId = document.getElementById('userId').value;
-    if (userId > 0 && userId <= 100) {
-      const newUrl = `/id`;
-      navigate(newUrl);
-    } else {
-      alert('Please enter a valid ID');
-    }
-  };
+    const [inputValue, setInputValue] = useState();
 
-  const redirectToLogin = () => {
-    navigate('/login');
-  };
+    const redirectToUrl =  () => {
+        if (inputValue > 0 && inputValue <= 100 ) {
 
-  const redirectToNewUser = () => {
-    navigate('/reg');
-  };
+            navigate('/id', { state: { inputValue } });
+        }
 
-  const redirectToAll = () => {
-    navigate('/All');
-  };
+        else {
+            alert('Please enter a valid ID');
+        }
+    };
 
-  const redirectToLogout = () => {
-      window.location.replace( 'https://localhost:8080/api/logout');
-  };
+    useEffect(() => {
+        loginButton();
+    }, []);
 
-  const redirectToProfile = () => {
-    navigate('/profile');
-  };
+    const loginButton = async () => {
+        try {
+            const response = await fetch('https://localhost:8080/api/authorization', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            if (response.status === 200) {
+                setButtonVisible(false);
+            } else {
+                setButtonVisible(true);
+            }
+            console.log(isButtonVisible)
+        } catch (error) {
+            console.error('Failed to fetch authorization:', error);
+        }
+    };
 
-  const redirectToAudioList = () => {
-    navigate('/audio_player');
-  };
+    const redirectToLogin = () => {
+        navigate('/login');
+    };
 
-  return (
-    <div className="container">
-      <button className="top-left-button" onClick={redirectToLogin}>
-        Зайти
-      </button>
-      <div className="form-container">
-        <h1>Enter ID</h1>
-        <input type="text" id="userId" placeholder="Enter your ID" />
-        <button onClick={redirectToUrl}>Go</button>
-      </div>
-      <button className="Reg_button" onClick={redirectToNewUser}>
-        Зарегаться
-      </button>
-      <button className="All_button" onClick={redirectToAll}>
-        All
-      </button>
-      <button className="top-left-button4" onClick={redirectToLogout}>
-        Выйти
-      </button>
-      <button className="top-left-button5" onClick={redirectToProfile}>
-        Профиль
-      </button>
-      <button className="top-left-button3" onClick={redirectToAudioList}>
-        Музон
-      </button>
-    </div>
-  );
+    const redirectToAll = () => {
+        navigate('/All');
+    };
+
+    const redirectToProfile =  () => {
+
+
+            if (!isButtonVisible) {
+                navigate('/profile');
+            } else {
+                navigate('/login');
+            }
+
+        };
+
+    const redirectToAudioList = () => {
+        navigate('/audio_player');
+    };
+
+    const handleInputChange = (event) => {
+        setInputValue(event.target.value);
+    };
+
+    return (
+        <div className="container">
+            <button className={isButtonVisible?"top":"top active"} onClick={redirectToLogin}>
+                    Sign in or sign up
+                </button>
+            <div className="form-container">
+                <h1>Enter ID</h1>
+                <input
+                    type="text"
+                    id="userId"
+                    placeholder="Enter your ID"
+                    value={inputValue}
+                    onChange={handleInputChange}
+                />
+                <button onClick={redirectToUrl}>Go</button>
+            </div>
+            <button className="All_button" onClick={redirectToAll}>
+                All
+            </button>
+            <button className="top-left-button5" onClick={redirectToProfile}>
+                Профиль
+            </button>
+            <button className="top-left-button3" onClick={redirectToAudioList}>
+                Музон
+            </button>
+
+        </div>
+    );
 };
 
 export default Welcome;
