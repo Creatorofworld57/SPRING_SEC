@@ -11,6 +11,7 @@ import org.springframework.core.io.InputStreamResource;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 @EnableWebMvc
 @RestController
@@ -29,19 +31,19 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class RestControllerForAudio {
     private final AudioRepository audioRepository;
-
+    @Async
     @Transactional
     @GetMapping("/audio/{id}")
-    public ResponseEntity<?> getAudio(@PathVariable Long id)  {
+    public CompletableFuture<ResponseEntity<?>> getAudio(@PathVariable Long id)  {
         Audio audio = audioRepository.getReferenceById(id);
 
-        return ResponseEntity.ok()
+        return CompletableFuture.completedFuture(ResponseEntity.ok()
                 .header("Name", URLEncoder.encode(audio.getName(), StandardCharsets.UTF_8))
                 .contentType(MediaType.valueOf(audio.getContentType()))
                 .contentLength(audio.getSize())
-                .body(new InputStreamResource(new ByteArrayInputStream(audio.getBuffer())));
+                .body(new InputStreamResource(new ByteArrayInputStream(audio.getBuffer()))));
     }
-
+    @Async
     @PostMapping("/audio")
     public void audioSend(@RequestParam("file") MultipartFile file) throws IOException {
         Audio audio = new Audio();
@@ -56,7 +58,7 @@ public class RestControllerForAudio {
         audio.setSize(file.getSize());
         audioRepository.save(audio);
     }
-
+    @Async
     @GetMapping("/audioName/{id}")
     public String audioName(@PathVariable Long id) {
         if (audioRepository.findAudioById(id).isPresent())

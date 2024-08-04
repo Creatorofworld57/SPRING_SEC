@@ -21,10 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.IntStream;
 
 
@@ -91,7 +88,7 @@ public class ServiceApp {
     }
 
     @Transactional
-    public void updateUser(String name, String password, MultipartFile file, UserDEtailsService model) throws IOException {
+    public void updateUser(String name, String password,String tele,String git, MultipartFile file, UserDEtailsService model) throws IOException {
         Img img2;
         Optional<Usermain> optUser = repository.findByName(model.getUsername());
         if (optUser.isPresent()) {
@@ -119,6 +116,23 @@ public class ServiceApp {
                 user.setPassword(passwordEncoder.encode(password));
             if (name != null)
                 user.setName(name);
+            if(git !=null || tele !=null) {
+                List<String> arr = new ArrayList<>();
+                arr.add(tele);
+                arr.add(git);
+                user.setSocial(arr);
+            }
+            else if(git !=null && tele==null){
+                List<String> arr = new ArrayList<>();
+                arr.add(git);
+                user.setSocial(arr);
+            }
+            else if(git == null && tele !=null){
+                List<String> arr = new ArrayList<>();
+                arr.add(tele);
+                user.setSocial(arr);
+            }
+
             Date data = new Date();
             user.setUpdated(data);
             repository.save(user);

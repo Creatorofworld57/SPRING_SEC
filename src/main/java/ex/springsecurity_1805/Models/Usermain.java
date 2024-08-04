@@ -3,12 +3,22 @@ package ex.springsecurity_1805.Models;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name="Users_In_System")
 public class Usermain {
 
@@ -29,12 +39,14 @@ public class Usermain {
     @JsonView(Views.Public.class)
     private Date updated;
 
-
-
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="user_socials", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "socials")
+    private List<String> social = new ArrayList<>();
 
     public void addImgToProduct(Img img){
         img.setUser(this);
-        
     }
+
 
 }

@@ -1,7 +1,6 @@
 package ex.springsecurity_1805.Controllers;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
 import ex.springsecurity_1805.Models.*;
 import ex.springsecurity_1805.Repositories.UserRepository;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +47,8 @@ public class RestController {
 
     @PatchMapping("/user")
     public void updateUser(@RequestParam("file") MultipartFile file, updateModel modelUp, @AuthenticationPrincipal UserDEtailsService model) throws IOException {
-        serviceApp.updateUser(modelUp.getName(), modelUp.getPassword(), file, model);
+        System.out.println("update2");
+        serviceApp.updateUser(modelUp.getName(), modelUp.getPassword(),modelUp.getTele(),modelUp.getGit(), file, model);
 
     }
 
@@ -77,7 +78,7 @@ public class RestController {
     public ResponseEntity<?> doYouHaveAuth(@AuthenticationPrincipal UserDEtailsService user) {
         System.out.println("ionic");
         if (user == null) {
-            return ResponseEntity.status(403).build();
+            return ResponseEntity.status(201).build();
         } else
             return ResponseEntity.status(200).build();
     }
@@ -107,7 +108,8 @@ public class RestController {
     @JsonView(Views.Public.class)
     @GetMapping("/infoAboutUser")
     public Usermain infoAboutUser(@AuthenticationPrincipal UserDEtailsService user) {
-        return rep.findByName(user.getUsername()).get();
+        Optional<Usermain> u =  rep.findByName(user.getUsername());
+        return u.orElse(null);
     }
     @CrossOrigin(origins = "https://localhost:3000/",allowCredentials = "true")
     @GetMapping("/All")
@@ -115,4 +117,30 @@ public class RestController {
     public List<Application> All() {
         return  serviceApp.allApplications();
     }
+
+
+    @CrossOrigin(origins = "https://localhost:3000/profile",allowCredentials = "true")
+    @GetMapping("/socials")
+    public Socials socials(@AuthenticationPrincipal UserDEtailsService userDEtailsService){
+        Optional<Usermain> us = rep.findByName(userDEtailsService.getUsername());
+        Socials social = new Socials();
+        if(us.isPresent() && !us.get().getSocial().isEmpty()){
+
+            social.setTelegram(us.get().getSocial().getFirst());
+            social.setGit(us.get().getSocial().getLast());
+        }
+        else {
+            social.setTelegram("tele");
+            social.setGit("git");
+
+        }
+        System.out.println(social.getGit());
+        return social;
+    }
+    @CrossOrigin(origins = "https://localhost:3000/profile",allowCredentials = "true")
+    @PostMapping("/receivingSocials")
+    public void receivingSocials(@RequestBody List<String>socials,@AuthenticationPrincipal UserDEtailsService user1){
+        rep.findByName(user1.getUsername()).get().setSocial(socials);
+    }
+
 }

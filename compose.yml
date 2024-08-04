@@ -1,9 +1,0 @@
-services:
-  db:
-    image: postgres:16
-    environment:
-      POSTGRES_DB: UsersInSystem
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: IU8_l1ver
-    ports:
-      - 5432
