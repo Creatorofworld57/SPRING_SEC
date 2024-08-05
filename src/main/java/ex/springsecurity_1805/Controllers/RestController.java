@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,9 +21,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @CrossOrigin(origins = "https://localhost:3000/", allowCredentials = "true")
 @org.springframework.web.bind.annotation.RestController
@@ -73,43 +75,43 @@ public class RestController {
             return ResponseEntity.ok("No user with such name");
 
     }
-
+    @Async
     @GetMapping("/authorization")
-    public ResponseEntity<?> doYouHaveAuth(@AuthenticationPrincipal UserDEtailsService user) {
-        System.out.println("ionic");
+    public CompletableFuture<ResponseEntity<?>> doYouHaveAuth(@AuthenticationPrincipal UserDEtailsService user) {
+        System.out.println("Авторизован");
         if (user == null) {
-            return ResponseEntity.status(201).build();
+            return CompletableFuture.completedFuture(ResponseEntity.status(201).build());
         } else
-            return ResponseEntity.status(200).build();
+            return CompletableFuture.completedFuture(ResponseEntity.status(200).build());
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('SUPERVISIOR')")
     @GetMapping("programInfo/{id}")
 
     public Application view(@PathVariable int id) {
-        System.out.println("print");
+        System.out.println("Инфа о пользователе доставлена");
 
         return serviceApp.applicationById(id);
 
     }
-
+    @Async
     @CrossOrigin(origins = "https://localhost:3000/login")
     @PostMapping("/checking")
-    public ResponseEntity<?> checkUserName(@RequestBody Data data) {
+    public CompletableFuture<ResponseEntity<?>> checkUserName(@RequestBody Data data) {
         System.out.println(data.getName());
         if (rep.findByName(data.getName()).isPresent()) {
-            return ResponseEntity.status(201).build();
+            return CompletableFuture.completedFuture(ResponseEntity.status(201).build());
         } else {
-            return ResponseEntity.status(200).build();
+            return CompletableFuture.completedFuture(ResponseEntity.status(200).build());
         }
     }
-
+    @Async
     @CrossOrigin(origins = "https://localhost:3000/profile",allowCredentials = "true")
     @JsonView(Views.Public.class)
     @GetMapping("/infoAboutUser")
-    public Usermain infoAboutUser(@AuthenticationPrincipal UserDEtailsService user) {
+    public CompletableFuture<Usermain> infoAboutUser(@AuthenticationPrincipal UserDEtailsService user) {
         Optional<Usermain> u =  rep.findByName(user.getUsername());
-        return u.orElse(null);
+        return CompletableFuture.completedFuture(u.orElse(null));
     }
     @CrossOrigin(origins = "https://localhost:3000/",allowCredentials = "true")
     @GetMapping("/All")

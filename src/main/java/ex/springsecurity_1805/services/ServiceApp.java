@@ -94,7 +94,7 @@ public class ServiceApp {
         if (optUser.isPresent()) {
             Usermain user = optUser.get();
 
-            if (file != null && file.getSize() != 0) {
+            if (!Objects.equals(file.getOriginalFilename(), "blob")) {
                 img2 = toImgEntity(file);
                 img2.setPreview(true);
 

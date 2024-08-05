@@ -54,7 +54,7 @@ public class Configuration1{
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers( "api/login", "/api/audio/**", "/api/audioName/**","api/authorization","api/checking").permitAll()
-                        .requestMatchers(HttpMethod.POST, "https:/localhost:8080/api/user").permitAll()// Разрешить доступ без аутентификации
+                        .requestMatchers(HttpMethod.POST, "/api/user").permitAll()// Разрешить доступ без аутентификации
                         .requestMatchers("/newUser").anonymous() // Доступно только анонимным пользователям
                         .requestMatchers("/api/**").authenticated()
                                 .requestMatchers("https://localhost:3000/profile").authenticated()
