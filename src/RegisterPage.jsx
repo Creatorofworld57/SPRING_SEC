@@ -107,7 +107,7 @@ const UserForm = () => {
                         required
                     />
                 </div>
-                <button id="but" type="submit">Send</button>
+                <button id="but" className={check?'send':'unsend'} type="submit">Send</button>
             </form>
             <button className="Back" onClick={() => navigate('/')}>Назад</button>
         </div>

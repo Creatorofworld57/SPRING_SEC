@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './Styles/Profile.css';
 import { useNavigate } from 'react-router-dom';
 import Menu from "./Menu";
+import { FaGithub, FaTelegramPlane } from 'react-icons/fa'; // Импорт иконок
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -60,7 +61,7 @@ const Profile = () => {
 
     return (
         <div>
-            <nav>
+            <nav >
                 <div className='burger-btn' onClick={() => setMenuActive(!menuActive)}>
                     <span className={menuActive ? 'deva' : 'deva active'} />
                 </div>
@@ -84,12 +85,12 @@ const Profile = () => {
             <Menu active={menuActive} setActive={setMenuActive} />
             <div className="link-preview">
                 <a href={url1} target="_blank" rel="noopener noreferrer">
-                    Telegram: {url1}
+                    <FaTelegramPlane />  {url1}
                 </a>
             </div>
             <div className="link-preview1">
                 <a href={url2} target="_blank" rel="noopener noreferrer">
-                    VK: {url2}
+                    <FaGithub />  {url2}
                 </a>
             </div>
         </div>

@@ -1,16 +1,19 @@
-
-
 #header-value {
     font-size: 1.5em;
     color: black;
     text-align: center;
-    margin-top: 20px;
+    position: fixed;
+    bottom: 160px; /* Adjust as needed to position above other elements */
+    right: 20px;
 }
 
 audio {
     display: block;
-    margin: 20px auto;
-    width: 80%;
+    position: fixed;
+    bottom: 100px; /* Adjust to fit above buttons */
+    right: 20px;
+    width: 100vmax;
+    max-width: 300px; /* Adjust max-width to prevent overflowing */
     border: 2px solid #000;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -20,10 +23,12 @@ audio {
     display: flex;
     justify-content: center;
     gap: 20px; /* Reduce the gap between buttons */
-    margin-top: 20px; /* Add margin for spacing */
+    position: fixed;
+    bottom: 20px; /* Position at the bottom */
+    right: 20px; /* Align to the right */
 }
 
-.button10, .button11 {
+.V, .N {
     background-color: #000;
     color: #fff;
     padding: 10px 20px;
@@ -32,32 +37,21 @@ audio {
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s, color 0.3s;
-    margin-outside: 20px;
+    margin: 10px; /* Add margin for spacing */
+    position: fixed; /* Fix the position */
 }
 
-.button10 {
-    order: 1;
+.V {
+    bottom: 20px; /* Position from the bottom */
+    right: 10px;  /* Position from the right, adjusted for spacing */
 }
 
-.button11 {
-    order: 2;
+.N {
+    bottom: 20px; /* Position from the bottom */
+    right: 150px;  /* Position from the right */
 }
 
-.top-left-button {
-    position: fixed; /* Ensure the button stays fixed in the top-left corner */
-    top: 20px;
-    left: 20px;
-    background-color: #000; /* Ensure consistent styling with other buttons */
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-.button10:hover, .button11:hover, .top-left-button:hover {
+.V:hover, .N:hover {
     background-color: #fff;
     color: #000;
     border: 2px solid #000;

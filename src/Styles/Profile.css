@@ -19,6 +19,16 @@ body {
     border-radius: 5px; /* закругленные края */
     cursor: pointer; /* указатель мыши */
 }
+/* Styles/Profile.css */
+
+#myImage {
+    width: 150px;  /* Set the desired width */
+    height: 150px; /* Set the desired height */
+    object-fit: cover; /* Ensure the image covers the area without distortion */
+     /* Optional: make the image circular */
+    border: 2px solid #ccc; /* Optional: add a border */
+}
+
 
 nav {
     width: 100%;

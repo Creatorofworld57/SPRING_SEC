@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Styles/Welcome.css';
+
+
 
 
 const Welcome = () => {
     const navigate = useNavigate();
     const [isButtonVisible, setButtonVisible] = useState(true);
-
     const [inputValue, setInputValue] = useState();
 
     const redirectToUrl =  () => {
@@ -61,7 +62,7 @@ const Welcome = () => {
         };
 
     const redirectToAudioList = () => {
-        navigate('/audio_player');
+        navigate('/audio_playlist');
     };
 
     const handleInputChange = (event) => {
@@ -93,6 +94,7 @@ const Welcome = () => {
             <button className="top-left-button3" onClick={redirectToAudioList}>
                 Музон
             </button>
+
 
         </div>
     );

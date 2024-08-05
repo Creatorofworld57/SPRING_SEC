@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import './Styles/Update.css';
 import { useNavigate } from "react-router-dom";
+import logo from './logo.svg';  // Import the default logo
 
 const Update = () => {
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [tele, setTele] = useState('');
     const [git, setGit] = useState('');
-    const [file, setFile] = useState(null);
+    const [file, setFile] = useState(null);  // Start with no file selected
     const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
@@ -18,7 +19,9 @@ const Update = () => {
         if (password) formData.append('password', password);
         if (tele) formData.append('tele', tele);
         if (git) formData.append('git', git);
-        if (file) formData.append('file', file);
+
+        // Append the file if it exists, otherwise append the default logo
+        formData.append('file', file || new Blob([logo], { type: 'image/svg+xml' }));
 
         const json = JSON.stringify({ name, password, tele, git });
         formData.append('json', new Blob([json], { type: 'application/json' }));
@@ -37,7 +40,7 @@ const Update = () => {
     };
 
     const useRedirect = () => {
-        navigate('/');
+        navigate('/profile');
     };
 
     return (

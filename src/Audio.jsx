@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useState, useEffect, useRef, useContext} from 'react';
 import './Styles/Audio.css'; // Импортируйте созданный CSS файл
 import { useNavigate } from 'react-router-dom';
+
 
 const AudioPlayer = () => {
   const [counter, setCounter] = useState(152);
@@ -8,6 +9,7 @@ const AudioPlayer = () => {
   const [audioCounter, setAudioCounter] = useState(452);
   const audioRef = useRef(null);
   const navigate = useNavigate();
+
 
   useEffect(() => {
     loadCounter();
@@ -61,11 +63,13 @@ const AudioPlayer = () => {
       audioElement.volume = 0.1;
 
       // Воспроизводим аудио, когда оно готово
-      audioElement.oncanplaythrough = () => {
+     /* audioElement.oncanplaythrough = () => {
         audioElement.play().catch(error => {
           console.error('Error playing audio:', error);
         });
-      };
+
+
+      };*/
     }
   };
 
@@ -87,9 +91,8 @@ const AudioPlayer = () => {
           <source src="" type="audio/mp3" />
         </audio>
         <div>
-          <button type="button" className="button10" id="first" onClick={nextAudio}>Следующий</button>
-          <button type="button" className="button11" id="second" onClick={prevAudio}>Предыдущий</button>
-         <button className="top-left-button" onClick={() => redirectTo('/')}>Назад</button>
+          <button  className="V" id="first" onClick={nextAudio}>Следующий</button>
+          <button  className="N" id="second" onClick={prevAudio}>Предыдущий</button>
         </div>
         <div className="form-container">
           <div id="header-value">{header}</div>
