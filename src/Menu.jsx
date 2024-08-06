@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react'
 import './Styles/Menu.css'
-import UserForm from "./RegisterPage";
 import {useNavigate} from "react-router-dom";
 
 const Menu = ({active,setActive}) => {
