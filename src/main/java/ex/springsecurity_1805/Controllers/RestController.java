@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-@CrossOrigin(origins = "https://localhost:3000/", allowCredentials = "true")
+
 @org.springframework.web.bind.annotation.RestController
 @AllArgsConstructor
 @RequestMapping("/api")
@@ -39,7 +40,7 @@ public class RestController {
         return new BCryptPasswordEncoder();
     }
 
-    @CrossOrigin(origins = "https://localhost:3000/reg")
+
     @PostMapping("/user")
     public void addUser(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException {
         System.out.println("hi");
@@ -60,7 +61,7 @@ public class RestController {
         System.out.println(model.getUsername());
         serviceApp.deleteUser(model);
     }
-
+    //Deprecated
     @PreAuthorize("hasAuthority('SUPERVISIOR')")
     @GetMapping("/secret/{name}")
     public ResponseEntity<?> secret(@PathVariable String name) {
@@ -75,45 +76,45 @@ public class RestController {
             return ResponseEntity.ok("No user with such name");
 
     }
-    @Async
+
     @GetMapping("/authorization")
-    public CompletableFuture<ResponseEntity<?>> doYouHaveAuth(@AuthenticationPrincipal UserDEtailsService user) {
+    public Mono<ResponseEntity<?>> doYouHaveAuth(@AuthenticationPrincipal UserDEtailsService user) {
         System.out.println("Авторизован");
         if (user == null) {
-            return CompletableFuture.completedFuture(ResponseEntity.status(201).build());
+            return Mono.just(ResponseEntity.status(201).build());
         } else
-            return CompletableFuture.completedFuture(ResponseEntity.status(200).build());
+            return Mono.just(ResponseEntity.status(200).build());
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('SUPERVISIOR')")
     @GetMapping("programInfo/{id}")
-
     public Application view(@PathVariable int id) {
         System.out.println("Инфа о пользователе доставлена");
 
         return serviceApp.applicationById(id);
 
     }
-    @Async
-    @CrossOrigin(origins = "https://localhost:3000/login")
+
+
     @PostMapping("/checking")
-    public CompletableFuture<ResponseEntity<?>> checkUserName(@RequestBody Data data) {
+    public Mono<ResponseEntity<?>> checkUserName(@RequestBody Data data) {
         System.out.println(data.getName());
         if (rep.findByName(data.getName()).isPresent()) {
-            return CompletableFuture.completedFuture(ResponseEntity.status(201).build());
+            return Mono.just(ResponseEntity.status(201).build());
         } else {
-            return CompletableFuture.completedFuture(ResponseEntity.status(200).build());
+            return Mono.just(ResponseEntity.status(200).build());
         }
     }
-    @Async
-    @CrossOrigin(origins = "https://localhost:3000/profile",allowCredentials = "true")
+
+
     @JsonView(Views.Public.class)
     @GetMapping("/infoAboutUser")
-    public CompletableFuture<Usermain> infoAboutUser(@AuthenticationPrincipal UserDEtailsService user) {
+    public Mono<Usermain> infoAboutUser(@AuthenticationPrincipal UserDEtailsService user) {
         Optional<Usermain> u =  rep.findByName(user.getUsername());
-        return CompletableFuture.completedFuture(u.orElse(null));
+        assert u.orElse(null) != null;
+        return Mono.just(u.orElse(null));
     }
-    @CrossOrigin(origins = "https://localhost:3000/",allowCredentials = "true")
+
     @GetMapping("/All")
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('SUPERVISIOR')")
     public List<Application> All() {
@@ -121,9 +122,9 @@ public class RestController {
     }
 
 
-    @CrossOrigin(origins = "https://localhost:3000/profile",allowCredentials = "true")
+
     @GetMapping("/socials")
-    public Socials socials(@AuthenticationPrincipal UserDEtailsService userDEtailsService){
+    public Mono<Socials> socials(@AuthenticationPrincipal UserDEtailsService userDEtailsService){
         Optional<Usermain> us = rep.findByName(userDEtailsService.getUsername());
         Socials social = new Socials();
         if(us.isPresent() && !us.get().getSocial().isEmpty()){
@@ -137,9 +138,9 @@ public class RestController {
 
         }
         System.out.println(social.getGit());
-        return social;
+        return Mono.just(social);
     }
-    @CrossOrigin(origins = "https://localhost:3000/profile",allowCredentials = "true")
+
     @PostMapping("/receivingSocials")
     public void receivingSocials(@RequestBody List<String>socials,@AuthenticationPrincipal UserDEtailsService user1){
         rep.findByName(user1.getUsername()).get().setSocial(socials);
