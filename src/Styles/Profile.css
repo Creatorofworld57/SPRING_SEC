@@ -9,16 +9,19 @@ body {
 
 .back_up {
     position: fixed; /* фиксируем положение кнопки */
-    bottom: 20px;       /* расположение сверху */
+    top: -10px;       /* расположение сверху */
     left: 10px;      /* расположение слева */
     z-index: 1001;   /* чтобы кнопка была выше других элементов */
-    background-color: #000; /* цвет фона */
-    color: #fff;     /* цвет текста */
-    border: none;    /* убрать границы */
-    padding: 10px 20px; /* внутренние отступы */
-    border-radius: 5px; /* закругленные края */
-    cursor: pointer; /* указатель мыши */
+    width:50px;
+    height: 50px;
+   background-color:white;
+    background-image: url('https://cdn-icons-png.flaticon.com/512/318/318504.png');
+    background-size:cover;
 }
+.back_up:hover{
+
+}
+
 /* Styles/Profile.css */
 
 #myImage {
@@ -52,54 +55,55 @@ main {
 p {
     margin: 20px;
 }
-
 .burger-btn {
     width: 30px;
     height: 30px;
     margin-left: 1800px;
     position: relative;
-}
-
-.burger-btn.active {
-    transform: rotate(180deg);
-    transition-duration: 1s;
+    cursor: pointer;
 }
 
 .burger-btn span {
+    display: block;
     position: absolute;
-    top: 19px;
+    margin: 10px;
     width: 30px;
-    background-color: white;
     height: 2px;
+    background-color: white;
+    transition: transform 0.5s, top 0.5s, opacity 0.5s;
 }
 
-.deva {
+/* Positioning the lines */
+.burger-btn .line1 {
+    top: 6px;
+}
+
+.burger-btn .line2 {
+    top: 14px;
+}
+
+.burger-btn .line3 {
+    top: 22px;
+}
+
+/* Active state for each line */
+.burger-btn .line1.active {
     transform: rotate(180deg);
-    transition-duration: 1s;
+   margin-outside: 8px;
 }
 
-.deva.active {
-    transform: rotate(-180deg);
-    transition-duration: 1s;
+.burger-btn .line2.active {
+    transform: rotate(180deg);
+    top: 14px;
+    margin-outside: 8px;
 }
 
-.burger-btn:before, .burger-btn.active:before {
-    content: '';
-    position: absolute;
-    top: 10px;
-    width: 30px;
-    background-color: white;
-    height: 2px;
+.burger-btn .line3.active {
+    transform: rotate(180deg);
+    top: 22px;
+    margin-outside: 8px;
 }
 
-.burger-btn:after, .burger-btn.active:after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    width: 30px;
-    background-color: white;
-    height: 2px;
-}
 
 .toggle-switch {
     display: flex;

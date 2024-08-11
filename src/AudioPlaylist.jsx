@@ -28,7 +28,7 @@ const AudioPlaylist = () => {
                     <li key={index}>{item}</li>
                 ))}
             </ul>
-            <button className="back_up" onClick={() => redirectTo('/')}>Назад</button>
+            <button className="back_up" onClick={() => redirectTo('/')}></button>
             <button className="top-left-button5" onClick={() => redirectTo('/audio_upload')}>Загрузить трек</button>
         </div>
     );
