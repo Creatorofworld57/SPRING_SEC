@@ -1,6 +1,6 @@
-import React, {useState, useEffect, useRef, useContext} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import './Styles/Audio.css'; // Импортируйте созданный CSS файл
-import { useNavigate } from 'react-router-dom';
+
 
 
 const AudioPlayer = () => {
@@ -8,7 +8,7 @@ const AudioPlayer = () => {
   const [header, setHeader] = useState('Loading header...');
   const [audioCounter, setAudioCounter] = useState(452);
   const audioRef = useRef(null);
-  const navigate = useNavigate();
+
 
 
   useEffect(() => {
@@ -52,24 +52,25 @@ const AudioPlayer = () => {
       // Устанавливаем название трека (если есть)
       try {
         const response = await fetch(`https://localhost:8080/api/audioName/${counter}`, { method: 'GET' });
-        setHeader(await response.text());
+        setHeader((await response.text()));
       } catch (error) {
         console.error('Error fetching audio name:', error);
         setHeader('Error loading header');
       }
 
+
       // Перезагружаем аудио для его воспроизведения с новым источником
       audioElement.load();
       audioElement.volume = 0.1;
-
+      if(counter !==152){
       // Воспроизводим аудио, когда оно готово
-     /* audioElement.oncanplaythrough = () => {
+      audioElement.oncanplaythrough = () => {
         audioElement.play().catch(error => {
           console.error('Error playing audio:', error);
         });
 
-
-      };*/
+      }
+      };
     }
   };
 
@@ -81,9 +82,7 @@ const AudioPlayer = () => {
     setCounter((prevCounter) => (prevCounter !== 152 ? prevCounter - 50 : prevCounter));
   };
 
-  const redirectTo = (url) => {
-    navigate(url);
-  };
+
 
   return (
       <div>

@@ -1,11 +1,10 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './Styles/index.css';
+import { createRoot } from 'react-dom/client';
 import App from './App';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+// Находим корневой элемент в HTML
+const container = document.getElementById('root');
+
+// Создаем корень и рендерим в него приложение
+const root = createRoot(container);
+root.render(<App />);

@@ -11,9 +11,9 @@ audio {
     display: block;
     position: fixed;
     bottom: 100px; /* Adjust to fit above buttons */
-    right: 20px;
-    width: 100vmax;
-    max-width: 300px; /* Adjust max-width to prevent overflowing */
+    right: 0px;
+    width: 100%;
+    max-width: 1920px; /* Adjust max-width to prevent overflowing */
     border: 2px solid #000;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);

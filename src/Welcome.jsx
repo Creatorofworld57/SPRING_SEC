@@ -75,7 +75,7 @@ const Welcome = () => {
                     Sign in or sign up
                 </button>
             <div className="form-container">
-                <h1>Enter ID</h1>
+                <h1>Enter name of track</h1>
                 <input
                     type="text"
                     id="userId"

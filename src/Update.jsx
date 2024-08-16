@@ -15,34 +15,45 @@ const Update = () => {
         event.preventDefault();
 
         const formData = new FormData();
-        if (name) formData.append('name', name);
-        if (password) formData.append('password', password);
-        if (tele) formData.append('tele', tele);
-        if (git) formData.append('git', git);
+        formData.append('name', name);
+        formData.append('password', password);
+        formData.append('tele', tele);
+        formData.append('git', git);
 
-        // Append the file if it exists, otherwise append the default logo
-        formData.append('file', file || new Blob([logo], { type: 'image/svg+xml' }));
+        // If file is selected, append it; otherwise, append the default logo
+        if (file) {
+            formData.append('file', file);
+        } else {
+            // Fetch the logo file as Blob
+            const response = await fetch(logo);
+            const logoBlob = await response.blob();
+            formData.append('file', logoBlob);
+        }
 
         const json = JSON.stringify({ name, password, tele, git });
         formData.append('json', new Blob([json], { type: 'application/json' }));
 
-        const response = await fetch('https://localhost:8080/api/user', {
-            method: 'PATCH',
-            body: formData,
-            credentials: "include"
-        });
+        try {
+            const response = await fetch('https://localhost:8080/api/user', {
+                method: 'PATCH',
+                body: formData,
+                credentials: "include"
+            });
 
-        if (response.ok) {
-            alert('Data sent successfully!');
-        } else {
-            alert('Failed to send data.');
+            if (response.ok) {
+                alert('Data sent successfully!');
+            } else {
+                const errorMessage = await response.text();
+                alert(`Failed to send data: ${errorMessage}`);
+            }
+        } catch (error) {
+            alert(`An error occurred: ${error.message}`);
         }
     };
 
-    const useRedirect = () => {
+    const handleRedirect = () => {
         navigate('/profile');
     };
-
     return (
         <div className="form-container">
             <h1>Enter Data</h1>
@@ -90,7 +101,7 @@ const Update = () => {
                 </div>
                 <button type="submit">Send</button>
             </form>
-            <button className="Back" onClick={useRedirect}>Назад</button>
+            <button className="Back" onClick={handleRedirect}>Назад</button>
         </div>
     );
 };
