@@ -3,6 +3,7 @@ package ex.springsecurity_1805.Controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import ex.springsecurity_1805.Models.*;
+import ex.springsecurity_1805.Repositories.TrailerRepository;
 import ex.springsecurity_1805.Repositories.UserRepository;
 import ex.springsecurity_1805.services.ServiceApp;
 import ex.springsecurity_1805.services.UserDEtailsService;
@@ -11,29 +12,37 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import lombok.AllArgsConstructor;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-
+@CrossOrigin(origins="https://localhost:3000",allowCredentials = "true")
 @org.springframework.web.bind.annotation.RestController
 @AllArgsConstructor
 @RequestMapping("/api")
 public class RestController {
     private UserRepository rep;
     private ServiceApp serviceApp;
+    private TrailerRepository trailerRepository;
+    private ServiceApp service;
 
 
     PasswordEncoder passwordEncoder() {
@@ -46,13 +55,23 @@ public class RestController {
         System.out.println("hi");
         serviceApp.addUser(request, file);
     }
+    @PostMapping("/user/withGithub")
+    public void addUserWithGitHub(@AuthenticationPrincipal OAuth2User principal){
+
+    }
 
 
     @PatchMapping("/user")
-    public void updateUser(@RequestParam("file") MultipartFile file, updateModel modelUp, @AuthenticationPrincipal UserDEtailsService model) throws IOException {
+    public void updateUser(@RequestParam("file") MultipartFile file, updateModel modelUp, @AuthenticationPrincipal UserDEtailsService model,@AuthenticationPrincipal OAuth2User principal) throws IOException {
         System.out.println("update2");
-        serviceApp.updateUser(modelUp.getName(), modelUp.getPassword(),modelUp.getTele(),modelUp.getGit(), file, model);
-
+        if(model!=null)
+          serviceApp.updateUser(modelUp.getName(), modelUp.getPassword(),modelUp.getTele(),modelUp.getGit(), file, model);
+        else {
+            Object loginValue = principal.getAttributes().get("login");
+            Usermain  user = rep.findByName(loginValue.toString()).get();
+            UserDEtailsService dEtailsService=new UserDEtailsService(user);
+            serviceApp.updateUser(modelUp.getName(), modelUp.getPassword(),modelUp.getTele(),modelUp.getGit(), file, dEtailsService);
+        }
     }
 
 
@@ -78,12 +97,25 @@ public class RestController {
     }
 
     @GetMapping("/authorization")
-    public Mono<ResponseEntity<?>> doYouHaveAuth(@AuthenticationPrincipal UserDEtailsService user) {
-        System.out.println("Авторизован");
-        if (user == null) {
+    public Mono<ResponseEntity<?>> doYouHaveAuth(@AuthenticationPrincipal UserDEtailsService user,@AuthenticationPrincipal OAuth2User principal) throws IOException {
+
+        if (principal==null && user==null ) {
+            System.out.println("Не авторизован ");
+
             return Mono.just(ResponseEntity.status(201).build());
-        } else
+        }
+        else{
+            if(principal!=null){
+                System.out.println(" авторизован"+principal.getName()+principal.getAttributes());
+                Object loginValue = principal.getAttributes().get("login");
+                System.out.println(loginValue);
+               if(rep.findByName(loginValue.toString()).isEmpty()){
+                   service.newUserWithOAuth(principal);
+               }
+            }
+            System.out.println(" авторизован");
             return Mono.just(ResponseEntity.status(200).build());
+        }
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('SUPERVISIOR')")
@@ -95,24 +127,34 @@ public class RestController {
 
     }
 
-
+    @CrossOrigin(origins="https://localhost:3000",allowCredentials = "true")
     @PostMapping("/checking")
-    public Mono<ResponseEntity<?>> checkUserName(@RequestBody Data data) {
+    public ResponseEntity<?> checkUserName(@RequestBody Data data) {
         System.out.println(data.getName());
         if (rep.findByName(data.getName()).isPresent()) {
-            return Mono.just(ResponseEntity.status(201).build());
+            return ResponseEntity.status(201).build();
         } else {
-            return Mono.just(ResponseEntity.status(200).build());
+            return ResponseEntity.status(200).build();
         }
     }
 
 
     @JsonView(Views.Public.class)
     @GetMapping("/infoAboutUser")
-    public Mono<Usermain> infoAboutUser(@AuthenticationPrincipal UserDEtailsService user) {
-        Optional<Usermain> u =  rep.findByName(user.getUsername());
-        assert u.orElse(null) != null;
-        return Mono.just(u.orElse(null));
+    public Mono<Usermain> infoAboutUser(@AuthenticationPrincipal UserDEtailsService user,@AuthenticationPrincipal OAuth2User principal) {
+        if(user !=null) {
+            Optional<Usermain> u = rep.findByName(user.getUsername());
+
+            assert u.orElse(null) != null;
+            return Mono.just(u.orElse(null));
+        }
+        else{
+            Object loginValue = principal.getAttributes().get("login");
+            Optional<Usermain> u = rep.findByName(loginValue.toString());
+
+            assert u.orElse(null) != null;
+            return Mono.just(u.orElse(null));
+        }
     }
 
     @GetMapping("/All")
@@ -124,18 +166,24 @@ public class RestController {
 
 
     @GetMapping("/socials")
-    public Mono<Socials> socials(@AuthenticationPrincipal UserDEtailsService userDEtailsService){
-        Optional<Usermain> us = rep.findByName(userDEtailsService.getUsername());
+    public Mono<Socials> socials(@AuthenticationPrincipal UserDEtailsService userDEtailsService,@AuthenticationPrincipal OAuth2User principal){
         Socials social = new Socials();
-        if(us.isPresent() && !us.get().getSocial().isEmpty()){
+        if(userDEtailsService!=null) {
+            Optional<Usermain> us = rep.findByName(userDEtailsService.getUsername());
+            if (us.isPresent() && !us.get().getSocial().isEmpty()) {
 
-            social.setTelegram(us.get().getSocial().getFirst());
-            social.setGit(us.get().getSocial().getLast());
+                social.setTelegram(us.get().getSocial().getFirst());
+                social.setGit(us.get().getSocial().getLast());
+            } else {
+                social.setTelegram("tele");
+                social.setGit("git");
+
+            }
         }
-        else {
+        else{
+            Object obj=principal.getAttributes().get("html_url");
             social.setTelegram("tele");
-            social.setGit("git");
-
+            social.setGit(obj.toString());
         }
         System.out.println(social.getGit());
         return Mono.just(social);
@@ -144,6 +192,22 @@ public class RestController {
     @PostMapping("/receivingSocials")
     public void receivingSocials(@RequestBody List<String>socials,@AuthenticationPrincipal UserDEtailsService user1){
         rep.findByName(user1.getUsername()).get().setSocial(socials);
+    }
+    @GetMapping("/trailer")
+    public ResponseEntity<?> getTrailer() {
+        Trailer trailer = trailerRepository.findById(1L).orElse(null);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf("video/mp4"))
+                .body(new InputStreamResource(new ByteArrayInputStream(trailer.getSize())));
+    }
+    @PostMapping("/uploadTrailer")
+    public void uploadTrailer(@RequestParam("file") MultipartFile file) throws IOException {
+        System.out.println("good");
+        Trailer trailer = new Trailer();
+        trailer.setSize(file.getBytes());
+        trailerRepository.save(trailer);
+
     }
 
 }

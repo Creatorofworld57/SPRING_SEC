@@ -19,9 +19,14 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -31,7 +36,11 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 
 @Configuration
@@ -41,6 +50,7 @@ import java.util.List;
 
 public class Configuration1{
     UserRepository repository;
+    CustomOidcUserService customOidcUserService;
     @Bean
     public UserDetailsService userDetailsService(){
        /* UserDetails admin0 = User.builder().username("admin0").password(encoder.encode("52")).roles("ADMIN").build();
@@ -56,7 +66,7 @@ public class Configuration1{
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "api/login", "/api/audio/**", "/api/audioName/**","api/authorization","api/checking").permitAll()
+                        .requestMatchers( "api/login", "/api/audio/**", "/api/audioName/**","api/authorization","/api/checking","/api/uploadTrailer","login/oauth2/authorization/github","/login/oauth2/git","/login/oauth2/code/github","/api/audioCount").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/user").permitAll()// Разрешить доступ без аутентификации
                         .requestMatchers("/newUser").anonymous() // Доступно только анонимным пользователям
                         .requestMatchers("/api/**").authenticated()
@@ -64,14 +74,23 @@ public class Configuration1{
                                 .requestMatchers("/ws/**").permitAll()
 
                 )
+
                 .formLogin(formLogin -> formLogin
                         .loginPage("https://localhost:3000/login") // Путь к странице логина
                         .loginProcessingUrl("/perform_login") // URL для обработки логина
-                        .defaultSuccessUrl("https://localhost:3000/")
+                        .defaultSuccessUrl("https://localhost:3000/profile")
                         // URL после успешного логина
-                        .failureUrl("https://localhost:3000/login") // URL после неудачного логина
+                        .failureUrl("https://localhost:3000/login")
+                        // URL после неудачного логина
                         .passwordParameter("password") // Параметр пароля
                         .usernameParameter("name") // Параметр имени пользователя
+                )
+                .oauth2Login(oauth2Login -> oauth2Login
+                        .userInfoEndpoint(userInfoEndpoint ->
+                                userInfoEndpoint.oidcUserService(customOidcUserService)
+                        )
+
+                       .defaultSuccessUrl("https://localhost:3000/")
                 )
                 .logout(logout -> logout
                         .logoutUrl("/api/logout") // URL для выхода
@@ -121,6 +140,8 @@ public class Configuration1{
         // - с нестандартными заголовками Authorization и X-CUSTOM-HEADER
         globalCorsConfiguration.addAllowedHeader(HttpHeaders.AUTHORIZATION);
         globalCorsConfiguration.addAllowedHeader("X-CUSTOM-HEADER");
+        globalCorsConfiguration.addAllowedHeader("Access-Control-Allow-Origin");
+        globalCorsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
         // - с передачей учётных данных
         globalCorsConfiguration.setAllowCredentials(true);
         // - с методами GET, POST, PUT, PATCH и DELETE
@@ -129,7 +150,8 @@ public class Configuration1{
                 HttpMethod.POST.name(),
                 HttpMethod.PUT.name(),
                 HttpMethod.PATCH.name(),
-                HttpMethod.DELETE.name()
+                HttpMethod.DELETE.name(),
+                HttpMethod.OPTIONS.name()
         ));
         // JavaScript может обращаться к заголовку X-OTHER-CUSTOM-HEADER ответа
         globalCorsConfiguration.setExposedHeaders(List.of("X-OTHER-CUSTOM-HEADER"));
@@ -141,6 +163,8 @@ public class Configuration1{
 
         return new CorsFilter(corsConfigurationSource);
     }
+
+
 //    @Bean
 //    public CorsConfigurationSource corsConfigurationSource() {
 //        CorsConfiguration config = new CorsConfiguration();

@@ -6,12 +6,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+
 
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.Date;
 import java.util.List;
 
@@ -43,6 +41,8 @@ public class Usermain {
     @CollectionTable(name="user_socials", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "socials")
     private List<String> social = new ArrayList<>();
+
+
 
     public void addImgToProduct(Img img){
         img.setUser(this);

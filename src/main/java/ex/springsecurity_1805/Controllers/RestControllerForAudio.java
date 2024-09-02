@@ -10,6 +10,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -22,13 +24,12 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
+
+import java.util.concurrent.TimeUnit;
 
 @EnableWebMvc
 @RestController
@@ -36,17 +37,16 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class RestControllerForAudio {
     private final AudioRepository audioRepository;
-    @Async
     @Transactional
     @GetMapping("/audio/{id}")
-    public CompletableFuture<ResponseEntity<?>> getAudio(@PathVariable Long id)  {
+    public ResponseEntity<?> getAudio(@PathVariable Long id)  {
         Audio audio = audioRepository.getReferenceById(id);
 
-        return CompletableFuture.completedFuture(ResponseEntity.ok()
-                .header("Name", URLEncoder.encode(audio.getName(), StandardCharsets.UTF_8))
+
+        return ResponseEntity.ok()
                 .contentType(MediaType.valueOf(audio.getContentType()))
                 .contentLength(audio.getSize())
-                .body(new InputStreamResource(new ByteArrayInputStream(audio.getBuffer()))));
+                .body(new InputStreamResource(new ByteArrayInputStream(audio.getBuffer())));
     }
     @Async
     @PostMapping("/audio")

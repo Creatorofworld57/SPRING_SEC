@@ -16,11 +16,11 @@ import java.util.Optional;
 @AllArgsConstructor
 public class MyUserDetailsService  implements UserDetailsService {
 
-   private UserRepository repository;
-  @Override
+    private UserRepository repository;
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Usermain> user = repository.findByName(username);
         return user.map(UserDEtailsService::new)
-                .orElseThrow(()->new UsernameNotFoundException(STR."\{username}not found"));
+                .orElseThrow(()->new UsernameNotFoundException(" ${username}not found"));
     }
 }

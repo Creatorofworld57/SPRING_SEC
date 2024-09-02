@@ -1,13 +1,21 @@
 package ex.springsecurity_1805;
 
-import org.junit.jupiter.api.Test;
+import ex.springsecurity_1805.Config.Configuration1;
+import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.testng.annotations.Test;
 
-@SpringBootTest
-class SpringSecurity1805ApplicationTests {
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = SpringSecurity1805Application.class)// Используется для интеграции с JUnit
+@ContextConfiguration(classes = Configuration1.class)
+public class SpringSecurity1805ApplicationTests {
+
+
 
 	@Test
-	void contextLoads() {
+	public void testMyService() {
+		// тестируем myService
 	}
-
 }

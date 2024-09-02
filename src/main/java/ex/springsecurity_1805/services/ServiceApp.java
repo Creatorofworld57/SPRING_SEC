@@ -13,14 +13,22 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -116,20 +124,18 @@ public class ServiceApp {
                 user.setPassword(passwordEncoder.encode(password));
             if (name != null)
                 user.setName(name);
-            if(git !=null || tele !=null) {
-                List<String> arr = new ArrayList<>();
-                arr.add(tele);
-                arr.add(git);
+
+            if(git !=null){
+                List<String> arr =  user.getSocial();
+                arr.removeLast();
+                arr.addLast(git);
                 user.setSocial(arr);
             }
-            else if(git !=null && tele==null){
-                List<String> arr = new ArrayList<>();
-                arr.add(git);
-                user.setSocial(arr);
-            }
-            else if(git == null && tele !=null){
-                List<String> arr = new ArrayList<>();
-                arr.add(tele);
+           if(tele !=null){
+                List<String> arr = user.getSocial();
+                System.out.println(arr);
+                arr.removeFirst();
+                arr.addFirst(tele);
                 user.setSocial(arr);
             }
 
@@ -194,6 +200,88 @@ public class ServiceApp {
             return userDetails.getUsername();
         }
         return null;
+    }
+    public void newUserWithOAuth(OAuth2User principal) throws IOException {
+        Usermain usermain = new Usermain();
+        Object SocialValue = principal.getAttributes().get("html_url");
+        Object NameValue = principal.getAttributes().get("login");
+        Object PasswordValue = principal.getAttributes().get("id");
+        Object UpdatedValue = principal.getAttributes().get("created_at");
+        Object CreatedValue = principal.getAttributes().get("updated_at");
+        Object URL_ImgValue = principal.getAttributes().get("avatar_url");
+
+      // MultipartFile file = downloadFileFromUrl(URL_ImgValue.toString());
+      // Img img = toImgEntity(file);
+     //  Img img1=imageRepository.save(img);
+
+
+
+
+        usermain.setSocial(Collections.singletonList(SocialValue.toString()));
+        usermain.setName(NameValue.toString());
+        usermain.setPassword(passwordEncoder.encode(PasswordValue.toString()));
+        Date date=new Date();
+        usermain.setCreated(date);
+        usermain.setUpdated(date);
+        Usermain user1 = repository.save(usermain);
+        //user1.setPreviewImageId(img1.getId());
+        repository.save(user1);
+    }
+    public MultipartFile downloadFileFromUrl(String url) throws IOException {
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<byte[]> response = restTemplate.getForEntity(url, byte[].class);
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            byte[] fileBytes = response.getBody();
+            assert fileBytes != null;
+            InputStream inputStream = new ByteArrayInputStream(fileBytes);
+
+            return new MultipartFile() {
+                @Override
+                public String getName() {
+                    return "file";
+                }
+
+                @Override
+                public String getOriginalFilename() {
+                    return "image/jpeg";
+                }
+
+                @Override
+                public String getContentType() {
+                    return "image/jpg";
+                }
+
+                @Override
+                public boolean isEmpty() {
+                    return false;
+                }
+
+                @Override
+                public long getSize() {
+                    return 0;
+                }
+
+                @Override
+                public byte[] getBytes() throws IOException {
+                    return inputStream.readAllBytes();
+                }
+
+                @Override
+                public InputStream getInputStream() throws IOException {
+                    return null;
+                }
+
+                @Override
+                public void transferTo(File dest) throws IOException, IllegalStateException {
+
+                }
+            };
+
+        }
+        else {
+            throw new IOException("Не удалось загрузить файл с URL: " + url);
+        }
     }
 
 }
