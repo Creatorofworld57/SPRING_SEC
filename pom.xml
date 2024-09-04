@@ -41,7 +41,7 @@
 	<name>SpringSecurity_1805</name>
 	<description>SpringSecurity_1805</description>
 	<properties>
-		<java.version>22</java.version>
+		<java.version>21</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
