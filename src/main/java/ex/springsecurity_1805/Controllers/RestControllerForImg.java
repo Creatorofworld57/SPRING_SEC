@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,19 +49,28 @@ public class RestControllerForImg {
     }
 
     @GetMapping("api/userInfo")
-    public String userInfo(@AuthenticationPrincipal UserDEtailsService s) {
-
-        if (s == null) {
+    public String userInfo(@AuthenticationPrincipal UserDEtailsService s, @AuthenticationPrincipal OAuth2User user) {
+        Long id = null;
+        if (s == null && user ==null) {
             return "16";
         }
 
+        if(s !=null) {
+            Optional<Usermain> userOpt = repo.findByName(s.getUsername());
 
-        Optional<Usermain> userOpt = repo.findByName(s.getUsername());
-        Long id = null;
 
-        if (userOpt.isPresent()) {
-            Usermain user = userOpt.get();
-            id = user.getPreviewImageId();
+            if (userOpt.isPresent()) {
+                Usermain us = userOpt.get();
+                id = us.getPreviewImageId();
+            }
+        }
+
+        else if( user !=null){
+            Optional<Usermain> userOpt = repo.findByName(user.getAttributes().get("login").toString());
+            if (userOpt.isPresent()) {
+                Usermain us = userOpt.get();
+                id = us.getPreviewImageId();
+            }
         }
 
         if (id == null) {

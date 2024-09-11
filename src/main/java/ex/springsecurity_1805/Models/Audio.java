@@ -3,7 +3,7 @@ package ex.springsecurity_1805.Models;
 import jakarta.persistence.*;
 
 import lombok.Data;
-
+import org.hibernate.annotations.GenericGenerator;
 
 
 @Data
@@ -11,7 +11,8 @@ import lombok.Data;
 @Table(name = "audio")
 public class Audio {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(generator = "custom-generator")
+    @GenericGenerator(name = "custom-generator", type = ex.springsecurity_1805.Models.CustomIdGenerator.class)
     private Long id;
     @Lob
     @Basic(fetch=FetchType.LAZY)

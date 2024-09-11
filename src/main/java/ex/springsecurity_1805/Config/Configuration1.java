@@ -4,32 +4,24 @@ package ex.springsecurity_1805.Config;
 import ex.springsecurity_1805.Repositories.UserRepository;
 import ex.springsecurity_1805.services.MyUserDetailsService;
 import lombok.AllArgsConstructor;
-
 import lombok.NonNull;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
-import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -38,9 +30,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-
-import static org.springframework.security.config.Customizer.withDefaults;
 
 
 @Configuration
@@ -66,7 +55,7 @@ public class Configuration1{
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "api/login", "/api/audio/**", "/api/audioName/**","api/authorization","/api/checking","/api/uploadTrailer","login/oauth2/authorization/github","/login/oauth2/git","/login/oauth2/code/github","/api/audioCount").permitAll()
+                        .requestMatchers( "api/login", "/api/audio/**", "/api/audioName/**","api/authorization","/api/checking","/api/uploadTrailer","login/oauth2/authorization/github","/login/oauth2/git","/login/oauth2/code/github","/api/audioCount","/api/user/withGithub/{id}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/user").permitAll()// Разрешить доступ без аутентификации
                         .requestMatchers("/newUser").anonymous() // Доступно только анонимным пользователям
                         .requestMatchers("/api/**").authenticated()
@@ -101,7 +90,7 @@ public class Configuration1{
         return http.build();
     }
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public DaoAuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService());
         provider.setPasswordEncoder(passwordEncoder());
@@ -135,9 +124,9 @@ public class Configuration1{
         var globalCorsConfiguration = new CorsConfiguration();
 
         // Разрешаются CORS-запросы:
-        // - с сайта https://localhost:3000
+
         globalCorsConfiguration.addAllowedOrigin("https://localhost:3000");
-        // - с нестандартными заголовками Authorization и X-CUSTOM-HEADER
+
         globalCorsConfiguration.addAllowedHeader(HttpHeaders.AUTHORIZATION);
         globalCorsConfiguration.addAllowedHeader("X-CUSTOM-HEADER");
         globalCorsConfiguration.addAllowedHeader("Access-Control-Allow-Origin");
@@ -153,16 +142,17 @@ public class Configuration1{
                 HttpMethod.DELETE.name(),
                 HttpMethod.OPTIONS.name()
         ));
-        // JavaScript может обращаться к заголовку X-OTHER-CUSTOM-HEADER ответа
+
         globalCorsConfiguration.setExposedHeaders(List.of("X-OTHER-CUSTOM-HEADER"));
-        // Браузер может кешировать настройки CORS на 10 секунд
+
         globalCorsConfiguration.setMaxAge(Duration.ofSeconds(10));
 
-        // Использование конфигурации CORS для всех запросов
+
         corsConfigurationSource.registerCorsConfiguration("/**", globalCorsConfiguration);
 
         return new CorsFilter(corsConfigurationSource);
     }
+
 
 
 //    @Bean

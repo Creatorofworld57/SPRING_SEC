@@ -3,33 +3,24 @@ package ex.springsecurity_1805.Controllers;
 
 import ex.springsecurity_1805.Models.Audio;
 import ex.springsecurity_1805.Repositories.AudioRepository;
-
-
 import ex.springsecurity_1805.services.UserDEtailsService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
-
-import org.springframework.http.CacheControl;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.Objects;
-
-import java.util.concurrent.TimeUnit;
 
 @EnableWebMvc
 @RestController
@@ -48,7 +39,6 @@ public class RestControllerForAudio {
                 .contentLength(audio.getSize())
                 .body(new InputStreamResource(new ByteArrayInputStream(audio.getBuffer())));
     }
-    @Async
     @PostMapping("/audio")
     public void audioSend(@RequestParam("file") MultipartFile file) throws IOException {
         Audio audio = new Audio();
@@ -61,7 +51,10 @@ public class RestControllerForAudio {
 
         audio.setContentType(file.getContentType());
         audio.setSize(file.getSize());
+        System.out.println(file.getSize());
         audioRepository.save(audio);
+        System.out.println(audio.getId());
+
     }
 
     @GetMapping("/audioName/{id}")
@@ -82,7 +75,7 @@ public class RestControllerForAudio {
     @CrossOrigin(origins = "https://localhost:3000/audio_playlist",allowCredentials = "true")
     @GetMapping ("/playList")
     public List<String> playList(@AuthenticationPrincipal UserDEtailsService user1){
-        return new ArrayList<>(audioRepository.findAllColumnNameValues());
+        return new ArrayList<>(audioRepository.findAllByOrderByIdAsc());
 
     }
 

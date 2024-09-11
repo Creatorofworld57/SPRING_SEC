@@ -4,31 +4,23 @@ import com.github.javafaker.Faker;
 import ex.springsecurity_1805.Models.Application;
 import ex.springsecurity_1805.Models.Audio;
 import ex.springsecurity_1805.Models.Img;
+import ex.springsecurity_1805.Models.Usermain;
 import ex.springsecurity_1805.Repositories.AudioRepository;
 import ex.springsecurity_1805.Repositories.ImageRepository;
 import ex.springsecurity_1805.Repositories.UserRepository;
-import ex.springsecurity_1805.Models.Usermain;
 import jakarta.annotation.PostConstruct;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -96,54 +88,82 @@ public class ServiceApp {
     }
 
     @Transactional
-    public void updateUser(String name, String password,String tele,String git, MultipartFile file, UserDEtailsService model) throws IOException {
-        Img img2;
+    public void updateUser(String name, String password, String tele, String git, MultipartFile file, UserDEtailsService model) throws IOException {
         Optional<Usermain> optUser = repository.findByName(model.getUsername());
         if (optUser.isPresent()) {
             Usermain user = optUser.get();
 
-            if (!Objects.equals(file.getOriginalFilename(), "blob")) {
-                img2 = toImgEntity(file);
+            // Обработка изображения
+            if (file != null && !file.isEmpty() && !"blob".equals(file.getOriginalFilename())) {
+                Img img2 = toImgEntity(file);
                 img2.setPreview(true);
 
-                user.addImgToProduct(img2);
-                Optional<Img> optImg = imageRepository.findById(user.getPreviewImageId());
-                if (optImg.isPresent()) {
-                    Img img = optImg.get();
+                if (user.getPreviewImageId() != null) {
+                    Optional<Img> optImg = imageRepository.findById(user.getPreviewImageId());
+                    if (optImg.isPresent()) {
+                        Img img = optImg.get();
+                        img.setName(img2.getName());
+                        img.setOriginalFileName(img2.getOriginalFileName());
+                        img.setContentType(img2.getContentType());
+                        img.setBytes(img2.getBytes());
+                        img.setSize(img2.getSize());
+                        imageRepository.save(img);
 
-                    img.setName(img2.getName());
-                    img.setOriginalFileName(img2.getOriginalFileName());
-                    img.setContentType(img2.getContentType());
-                    img.setBytes(img2.getBytes());
-                    img.setSize(img2.getSize());
+                    }
+                } else {
+                    user.addImgToProduct(img2);
+                    Img  img3 = imageRepository.save(img2);
+                    user.addImgToProduct(img3);
+                    user.setPreviewImageId(img3.getId());
 
-                    imageRepository.save(img);
+                    System.out.println("Изображение привязано");
                 }
             }
-            if (password != null)
+
+            // Обновление пароля
+            if (password != null && !password.trim().isEmpty()) {
                 user.setPassword(passwordEncoder.encode(password));
-            if (name != null)
+            }
+
+            // Обновление имени
+            if (name != null) {
                 user.setName(name);
-
-            if(git !=null){
-                List<String> arr =  user.getSocial();
-                arr.removeLast();
-                arr.addLast(git);
-                user.setSocial(arr);
-            }
-           if(tele !=null){
-                List<String> arr = user.getSocial();
-                System.out.println(arr);
-                arr.removeFirst();
-                arr.addFirst(tele);
-                user.setSocial(arr);
             }
 
-            Date data = new Date();
-            user.setUpdated(data);
+            // Обновление социальных ссылок
+            List<String> socialLinks = user.getSocial();
+            if (socialLinks == null) {
+                socialLinks = new LinkedList<>();
+            }
+
+            // Обновление git ссылки
+            if (git != null) {
+                if (!socialLinks.isEmpty() && socialLinks.get(0).startsWith("https://t.me")) {
+                    socialLinks.addFirst(git);
+                } else {
+                    socialLinks.add(git);
+                }
+            }
+
+            // Обновление tele ссылки
+            if (tele != null) {
+                if (!socialLinks.isEmpty() && socialLinks.get(0).startsWith("https://t.me")) {
+                    socialLinks.add(1, tele);
+                } else {
+                    socialLinks.add(tele);
+                }
+            }
+
+            user.setSocial(socialLinks);
+
+            // Обновление даты
+            user.setUpdated(new Date());
+
+            // Сохранение пользователя
             repository.save(user);
         }
     }
+
 
 
     @Transactional
@@ -227,7 +247,7 @@ public class ServiceApp {
         //user1.setPreviewImageId(img1.getId());
         repository.save(user1);
     }
-    public MultipartFile downloadFileFromUrl(String url) throws IOException {
+    /* public MultipartFile downloadFileFromUrl(String url) throws IOException {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<byte[]> response = restTemplate.getForEntity(url, byte[].class);
 
@@ -282,6 +302,6 @@ public class ServiceApp {
         else {
             throw new IOException("Не удалось загрузить файл с URL: " + url);
         }
-    }
+    }*/
 
 }

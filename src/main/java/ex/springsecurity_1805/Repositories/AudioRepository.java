@@ -13,6 +13,6 @@ import java.util.Optional;
 public interface AudioRepository extends JpaRepository<Audio,Long> {
 
     Optional<Audio> findAudioById(Long id);
-    @Query("SELECT e.name FROM Audio e")
-    List< String> findAllColumnNameValues(); // Замените String на соответствующий т
+    @Query("SELECT e.name FROM Audio e ORDER BY e.id ASC ")
+    List<String> findAllByOrderByIdAsc(); // Замените String на соответствующий т
 }
