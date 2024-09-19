@@ -15,7 +15,6 @@ ex\springsecurity_1805\Models\Application$ApplicationBuilder.class
 ex\springsecurity_1805\Models\Views$Public.class
 ex\springsecurity_1805\Config\CustomOidcUserService.class
 ex\springsecurity_1805\SpringSecurity1805Application.class
-ex\springsecurity_1805\services\ServiceApp$1.class
 ex\springsecurity_1805\Models\Usermain.class
 ex\springsecurity_1805\services\MyUserDetailsService.class
 ex\springsecurity_1805\Config\Configuration1.class

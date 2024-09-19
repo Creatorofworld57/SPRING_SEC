@@ -18,9 +18,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @EnableWebMvc
 @RestController
@@ -58,14 +56,12 @@ public class RestControllerForAudio {
     }
 
     @GetMapping("/audioName/{id}")
-    public String audioName(@PathVariable Long id) {
-        if (audioRepository.findAudioById(id).isPresent())
-            return audioRepository.findAudioById(id).get().getName();
-        else
-            return "Track";
+    public Map<String,String> audioName(@PathVariable Long id) {
+        Optional<Audio> opt = audioRepository.findAudioById(id);
+        return opt.map(audio -> Map.of("name", audio.getName())).orElseGet(() -> Map.of("name", "Track"));
     }
 
-    //доделать счетчик
+    //доделать счетчик (сделано)
     @GetMapping("/audioCount")
     public String audioCount() {
         long counter = audioRepository.count();

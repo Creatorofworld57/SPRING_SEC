@@ -30,4 +30,10 @@ services:
      - "3000:3000"
    restart: always
 
+  app-3:
+     image: javamusicapi
+     restart: always
+
+
+
   

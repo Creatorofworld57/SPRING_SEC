@@ -1,6 +1,7 @@
 package ex.springsecurity_1805.Controllers;
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonView;
 import ex.springsecurity_1805.Models.*;
 import ex.springsecurity_1805.Repositories.TrailerRepository;
@@ -32,6 +33,7 @@ import reactor.core.publisher.Mono;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -69,6 +71,11 @@ public class RestController {
        return id.toString();
     }
 
+    @JsonView(Views.Public.class)
+    @GetMapping("/searchOfTrack/{name}")
+    public List<Audio> searchOfTrack(@PathVariable String name){
+      return serviceApp.searchTrackFromBD(name);
+    }
 
     @PatchMapping("/user")
     public void updateUser(@RequestParam("file") MultipartFile file, updateModel modelUp, @AuthenticationPrincipal UserDEtailsService model,@AuthenticationPrincipal OAuth2User principal) throws IOException {
