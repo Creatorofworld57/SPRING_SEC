@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import './Styles/Update.css';
 import { useNavigate } from "react-router-dom";
 import logo from './logo.svg';  // Import the default logo
@@ -10,7 +10,9 @@ const Update = () => {
     const [git, setGit] = useState('');
     const [file, setFile] = useState(null);  // Start with no file selected
     const navigate = useNavigate();
-
+    useEffect(() => {
+       getUser();
+    }, []);
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -49,6 +51,24 @@ const Update = () => {
         } catch (error) {
             alert(`An error occurred: ${error.message}`);
         }
+    };
+    const getUser = async () => {
+        try {
+            const response = await fetch('https://localhost:8080/api/infoAboutUser', {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            const userok = await response.json();
+            setName(userok.name)
+            setTele(userok.tele)
+            setGit(userok.git)
+
+        } catch (error) {
+            console.error('Error fetching user info', error);
+        }
+
+
     };
 
     const handleRedirect = () => {
