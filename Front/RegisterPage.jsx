@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Styles/Registr.css';
 import { useNavigate } from 'react-router-dom';
-import * as events from "events";
+
 
 const UserForm = () => {
     const [name, setName] = useState('');
@@ -20,20 +20,26 @@ const UserForm = () => {
         formData.append('password', password);
         formData.append('roles', roles);
         formData.append('file', file);
-
-        try {
-            const response = await fetch('https://localhost:8080/api/user', {
+        const dataForLogin = {
+            name: name,
+            password: password
+        };
+        const resp = async()=> {
+            await fetch('https://localhost:8080/api/user', {
                 method: 'POST',
-                body: formData
+                body: formData,
+                credentials: 'include'
             });
 
-
-                navigate('/');
-
+        }
+        try {
+           await resp()
+            navigate('/')
         } catch (error) {
             console.error('Error:', error);
             alert('Ошибка при отправке данных');
         }
+
     };
 
     const checking = async (name) => {
@@ -107,7 +113,7 @@ const UserForm = () => {
                         required
                     />
                 </div>
-                <button id="but" className={check?'send':'unsend'} type="submit">Send</button>
+                <button id="but" className={check?'send':'unsent'} type="submit">Send</button>
             </form>
             <button className="Back" onClick={() => navigate('/')}>Назад</button>
         </div>
