@@ -1,15 +1,18 @@
 package ex.springsecurity_1805.Controllers;
 
 
+import com.fasterxml.jackson.annotation.JsonView;
 import ex.springsecurity_1805.Models.Audio;
+import ex.springsecurity_1805.Models.Views;
+
 import ex.springsecurity_1805.Repositories.AudioRepository;
+import ex.springsecurity_1805.services.RedisService;
 import ex.springsecurity_1805.services.UserDEtailsService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
@@ -26,17 +29,20 @@ import java.util.*;
 @RequiredArgsConstructor
 public class RestControllerForAudio {
     private final AudioRepository audioRepository;
+    private final RedisService service;
+
     @Transactional
     @GetMapping("/audio/{id}")
-    public ResponseEntity<?> getAudio(@PathVariable Long id)  {
-        Audio audio = audioRepository.getReferenceById(id);
+    public ResponseEntity<?> getAudio(@PathVariable Long id) {
 
 
+       Audio audio =  service.getAudioById(id);
         return ResponseEntity.ok()
                 .contentType(MediaType.valueOf(audio.getContentType()))
                 .contentLength(audio.getSize())
                 .body(new InputStreamResource(new ByteArrayInputStream(audio.getBuffer())));
     }
+
     @PostMapping("/audio")
     public void audioSend(@RequestParam("file") MultipartFile file) throws IOException {
         Audio audio = new Audio();
@@ -49,28 +55,39 @@ public class RestControllerForAudio {
 
         audio.setContentType(file.getContentType());
         audio.setSize(file.getSize());
-        System.out.println(file.getSize());
         audioRepository.save(audio);
         System.out.println(audio.getId());
 
     }
 
+    @JsonView(Views.Public.class)
     @GetMapping("/audioName/{id}")
-    public Map<String,String> audioName(@PathVariable Long id) {
+    public Audio audioName(@PathVariable Long id) {
+       /* Optional<Audio> opt = audioRepository.findAudioById(id);
+        return opt.map(audio -> Map.of("name", audio.getName())).orElseGet(() -> Map.of("name", "Track"));*/
         Optional<Audio> opt = audioRepository.findAudioById(id);
-        return opt.map(audio -> Map.of("name", audio.getName())).orElseGet(() -> Map.of("name", "Track"));
+        return opt.orElse(null);
+    }
+
+
+    @GetMapping("/audioInfo/{id}")
+    public Audio audioInfo(@PathVariable Long id) {
+        Optional<Audio> opt = audioRepository.findAudioById(id);
+        return opt.orElse(null);
+
     }
 
     //доделать счетчик (сделано)
     @GetMapping("/audioCount")
     public String audioCount() {
         long counter = audioRepository.count();
-        return Long.toString(102+(counter-1)*50);
+        return Long.toString(102 + (counter - 1) * 50);
 
     }
-    @CrossOrigin(origins = "https://localhost:3000/audio_playlist",allowCredentials = "true")
-    @GetMapping ("/playList")
-    public List<String> playList(@AuthenticationPrincipal UserDEtailsService user1){
+
+    @CrossOrigin(origins = "https://localhost:3000/audio_playlist", allowCredentials = "true")
+    @GetMapping("/playList")
+    public List<String> playList(@AuthenticationPrincipal UserDEtailsService user1) {
         return new ArrayList<>(audioRepository.findAllByOrderByIdAsc());
 
     }

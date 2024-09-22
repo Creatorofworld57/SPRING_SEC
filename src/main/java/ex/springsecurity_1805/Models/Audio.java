@@ -5,13 +5,18 @@ import jakarta.persistence.*;
 
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.redis.core.RedisHash;
+
+import java.io.Serializable;
 
 
 @Data
 @Entity
+@RedisHash("Audio")
 @Table(name = "audio")
-public class Audio {
+public class Audio implements Serializable {
     @Id
+    @JsonView(Views.Public.class)
     @GeneratedValue(generator = "custom-generator")
     @GenericGenerator(name = "custom-generator", type = ex.springsecurity_1805.Models.CustomIdGenerator.class)
     private Long id;
@@ -21,7 +26,6 @@ public class Audio {
     @JsonView(Views.Public.class)
     private String name;
     private String ContentType;
-    @JsonView(Views.Public.class)
     private Long Size;
     @JsonView(Views.Public.class)
     private String Author;

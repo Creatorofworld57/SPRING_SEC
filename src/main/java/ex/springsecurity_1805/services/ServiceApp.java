@@ -10,6 +10,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,7 @@ public class ServiceApp {
                 .filter(app -> app.getId() == id)
                 .findFirst().orElse(null);
     }
+
 
     public Application applicationByName(String name) {
         return applicationList.stream()

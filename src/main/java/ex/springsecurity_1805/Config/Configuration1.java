@@ -1,6 +1,7 @@
 package ex.springsecurity_1805.Config;
 
 
+import ex.springsecurity_1805.Repositories.AudioRepository;
 import ex.springsecurity_1805.Repositories.UserRepository;
 import ex.springsecurity_1805.services.MyUserDetailsService;
 import lombok.AllArgsConstructor;
@@ -8,12 +9,10 @@ import lombok.NonNull;
 import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -34,18 +33,22 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
 @AllArgsConstructor
-
+@EnableJpaRepositories( basePackages ="ex.springsecurity_1805.Repositories")
 public class Configuration1{
     UserRepository repository;
     CustomOidcUserService customOidcUserService;
+    AudioRepository audioRepository;
     @Bean
     public UserDetailsService userDetailsService(){
        /* UserDetails admin0 = User.builder().username("admin0").password(encoder.encode("52")).roles("ADMIN").build();
         UserDetails admin1 = User.builder().username("admin1").password(encoder.encode("703.747")).roles("USER").build();
         UserDetails admin2 = User.builder().username("admin2").password(encoder.encode("18")).roles("USER").build();*/
      return new MyUserDetailsService(repository);
+    }
+    @Bean
+    public AudioRepository audioRepository () {
+      return  audioRepository ;
     }
     @Bean
     static public PasswordEncoder passwordEncoder(){
@@ -55,7 +58,7 @@ public class Configuration1{
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "api/login", "/api/audio/**", "/api/audioName/**","api/authorization","/api/checking","/api/uploadTrailer","login/oauth2/authorization/github","/login/oauth2/git","/login/oauth2/code/github","/api/audioCount","/api/user/withGithub/{id}").permitAll()
+                        .requestMatchers( "api/login", "/api/audio/**", "/api/audioName/**","api/authorization","/api/checking","/api/uploadTrailer","login/oauth2/authorization/github","/login/oauth2/git","/login/oauth2/code/github","/api/audioCount","/api/user/withGithub/{id}","/api/searchOfTrack/{name}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/user").permitAll()// Разрешить доступ без аутентификации
                         .requestMatchers("/newUser").anonymous() // Доступно только анонимным пользователям
                         .requestMatchers("/api/**").authenticated()

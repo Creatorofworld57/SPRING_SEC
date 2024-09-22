@@ -47,7 +47,7 @@ public class RestControllerForImg {
                 .contentLength(img.getSize())
                 .body(new InputStreamResource(new ByteArrayInputStream(img.getBytes())));
     }
-
+    //отправка фото для профиля
     @GetMapping("api/userInfo")
     public String userInfo(@AuthenticationPrincipal UserDEtailsService s, @AuthenticationPrincipal OAuth2User user) {
         Long id = null;

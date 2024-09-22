@@ -1,4 +1,5 @@
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Repositories\AudioRepository.java
+C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\services\ServiceHelperFunctions.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Models\Views.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Models\Trailer.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Config\SameSiteFilter.java
@@ -15,10 +16,13 @@ C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecuri
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Controllers\ControllerF.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Config\CustomOidcUserService.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Repositories\ImageRepository.java
+C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Repositories\UserRedisRepository.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\services\MyUserDetailsService.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Config\JwtUtil.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Models\Socials.java
+C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Controllers\RestControllerForUserCRUD.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Models\updateModel.java
+C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\services\AlgorithmsOfRecomendations.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\services\UserDEtailsService.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Controllers\RestController.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Controllers\RestControllerForAudio.java
