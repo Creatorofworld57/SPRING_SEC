@@ -8,16 +8,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
+
 import java.util.ArrayList;
 
 import java.util.Date;
 import java.util.List;
 
+
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="Users_In_System")
+@Table(name = "Users_In_System")
 public class Usermain {
 
 
@@ -38,15 +40,12 @@ public class Usermain {
     private Date updated;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="user_socials", joinColumns = @JoinColumn(name = "user_id"))
+    @CollectionTable(name = "user_socials", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "socials")
     private List<String> social = new ArrayList<>();
 
 
-
-    public void addImgToProduct(Img img){
-        img.setUser(this);
-    }
+    public void addImgToProduct(Img img) {img.setUser(this);}
 
 
 }

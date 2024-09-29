@@ -1,20 +1,13 @@
 package ex.springsecurity_1805.services;
 
 import com.github.javafaker.Faker;
-import ex.springsecurity_1805.Models.Application;
-import ex.springsecurity_1805.Models.Audio;
-import ex.springsecurity_1805.Models.Img;
-import ex.springsecurity_1805.Models.Usermain;
-import ex.springsecurity_1805.Repositories.AudioRepository;
+import ex.springsecurity_1805.Models.*;
 import ex.springsecurity_1805.Repositories.ImageRepository;
 import ex.springsecurity_1805.Repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -22,47 +15,22 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 
 @Service
 @AllArgsConstructor
 public class ServiceApp {
-    private List<Application> applicationList;
+
     private UserRepository repository;
     private PasswordEncoder passwordEncoder;
     private ImageRepository imageRepository;
-    private AudioRepository audioRepository;
 
-    @PostConstruct
-    public void loadAppInDB() {
-        Faker faker = new Faker();
-        applicationList = IntStream.rangeClosed(1, 100)
-                .mapToObj(i -> Application.builder()
-                        .id(i)
-                        .name(faker.app().name())
-                        .author(faker.app().author())
-                        .version(faker.app().version())
-                        .build())
-                .toList();
-    }
 
-    public List<Application> allApplications() {
-        return applicationList;
-    }
 
-    public Application applicationById(int id) {
 
-        return applicationList.stream()
-                .filter(app -> app.getId() == id)
-                .findFirst().orElse(null);
-    }
 
-    public Application applicationByName(String name) {
-        return applicationList.stream()
-                .filter(app -> Objects.equals(app.getName(), name))
-                .findFirst().orElse(null);
-    }
 
     public void addUser(HttpServletRequest request, MultipartFile file) throws IOException {
         Img img = new Img();
@@ -72,7 +40,7 @@ public class ServiceApp {
         user.setRoles(request.getParameter("roles"));
 
         if (file != null && file.getSize() != 0) {
-            img = toImgEntity(file);
+            img = ServiceHelperFunctions.toImgEntity(file);
             img.setPreview(true);
             user.addImgToProduct(img);
         }
@@ -95,7 +63,7 @@ public class ServiceApp {
 
             // Обработка изображения
             if (file != null && !file.isEmpty() && !"blob".equals(file.getOriginalFilename())) {
-                Img img2 = toImgEntity(file);
+                Img img2 = ServiceHelperFunctions.toImgEntity(file);
                 img2.setPreview(true);
 
                 if (user.getPreviewImageId() != null) {
@@ -192,35 +160,10 @@ public class ServiceApp {
         }
     }
 
-    private Img toImgEntity(MultipartFile file) throws IOException {
-        Img img = new Img();
-        img.setName(file.getName());
-        img.setOriginalFileName(file.getOriginalFilename());
-        img.setContentType(file.getContentType());
-        img.setSize(file.getSize());
-        img.setBytes(file.getBytes());
-        return img;
 
-    }
 
-    public void audioKeep(MultipartFile file) throws IOException {
-        Audio audio = new Audio();
-        audio.setBuffer(file.getBytes());
-        audio.setName(file.getOriginalFilename());
-        audio.setContentType(file.getContentType());
-        audio.setSize(file.getSize());
-        audioRepository.save(audio);
-    }
-    public static UserDetails getCurrentUser() {
-        return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
-    public String getUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
-            return userDetails.getUsername();
-        }
-        return null;
-    }
+
+
     public void newUserWithOAuth(OAuth2User principal) throws IOException {
         Usermain usermain = new Usermain();
         Object SocialValue = principal.getAttributes().get("html_url");
@@ -247,61 +190,8 @@ public class ServiceApp {
         //user1.setPreviewImageId(img1.getId());
         repository.save(user1);
     }
-    /* public MultipartFile downloadFileFromUrl(String url) throws IOException {
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<byte[]> response = restTemplate.getForEntity(url, byte[].class);
 
-        if (response.getStatusCode().is2xxSuccessful()) {
-            byte[] fileBytes = response.getBody();
-            assert fileBytes != null;
-            InputStream inputStream = new ByteArrayInputStream(fileBytes);
 
-            return new MultipartFile() {
-                @Override
-                public String getName() {
-                    return "file";
-                }
 
-                @Override
-                public String getOriginalFilename() {
-                    return "image/jpeg";
-                }
-
-                @Override
-                public String getContentType() {
-                    return "image/jpg";
-                }
-
-                @Override
-                public boolean isEmpty() {
-                    return false;
-                }
-
-                @Override
-                public long getSize() {
-                    return 0;
-                }
-
-                @Override
-                public byte[] getBytes() throws IOException {
-                    return inputStream.readAllBytes();
-                }
-
-                @Override
-                public InputStream getInputStream() throws IOException {
-                    return null;
-                }
-
-                @Override
-                public void transferTo(File dest) throws IOException, IllegalStateException {
-
-                }
-            };
-
-        }
-        else {
-            throw new IOException("Не удалось загрузить файл с URL: " + url);
-        }
-    }*/
 
 }

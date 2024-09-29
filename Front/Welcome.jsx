@@ -1,25 +1,43 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {createContext, useContext, useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Styles/Welcome.css';
 
-
+import SlidingMenu from "./HelperModuls/SlidingMenu";
 
 
 const Welcome = () => {
     const navigate = useNavigate();
     const [isButtonVisible, setButtonVisible] = useState(true);
-    const [inputValue, setInputValue] = useState();
+    const [inputValue, setInputValue] = useState('');  // Значение из поля ввода
+    const [tracks, setTracks] = useState([]);  // Список треков
 
-    const redirectToUrl =  () => {
-        if (inputValue > 0 && inputValue <= 100 ) {
 
-            navigate('/id', { state: { inputValue } });
-        }
-
-        else {
-            alert('Please enter a valid ID');
+    // Функция для поиска треков по названию
+    const searchTracks = async (query) => {
+        try {
+            const response = await fetch(`https://localhost:8080/api/searchOfTrack/${query}`, {
+                method: 'GET',
+                credentials: 'include'
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setTracks(data);  // Устанавливаем найденные треки в состояние
+            } else {
+                setTracks([]);  // Если ничего не найдено, очищаем список
+            }
+        } catch (error) {
+            console.error('Error fetching track info', error);
         }
     };
+
+    // Отправка запроса на сервер при изменении inputValue
+    useEffect(() => {
+        if (inputValue) {
+            searchTracks(inputValue);  // Вызываем функцию поиска, если есть текст в поле
+        } else {
+            setTracks([]);  // Если поле ввода пустое, очищаем список треков
+        }
+    }, [inputValue]);
 
     useEffect(() => {
         loginButton();
@@ -42,6 +60,10 @@ const Welcome = () => {
         }
     };
 
+    const handleInputChange = (event) => {
+        setInputValue(event.target.value);
+    };
+
     const redirectToLogin = () => {
         navigate('/login');
     };
@@ -50,41 +72,39 @@ const Welcome = () => {
         navigate('/All');
     };
 
-    const redirectToProfile =  () => {
-
-
-            if (!isButtonVisible) {
-                navigate('/profile');
-            } else {
-                navigate('/login');
-            }
-
-        };
+    const redirectToProfile = () => {
+        navigate('/profile');
+    };
 
     const redirectToAudioList = () => {
         navigate('/audio_playlist');
     };
 
-    const handleInputChange = (event) => {
-        setInputValue(event.target.value);
-    };
-
     return (
         <div className="container">
-            <button className={isButtonVisible?"top":"top active"} onClick={redirectToLogin}>
-                    Sign in or sign up
-                </button>
+            <button
+                className={isButtonVisible ? "top" : "top active"}
+
+                onClick={redirectToLogin}
+            >
+                Sign in or sign up
+            </button>
             <div className="form-container">
-                <h1>Enter name of track</h1>
+                <h1>
+                    Enter name of track
+                </h1>
                 <input
                     type="text"
                     id="userId"
-                    placeholder="Enter your ID"
+                    placeholder="Enter name"
                     value={inputValue}
                     onChange={handleInputChange}
                 />
-                <button onClick={redirectToUrl}>Go</button>
             </div>
+
+            {/* Вставляем SlidingMenu и передаем туда список треков */}
+            <SlidingMenu tracks={tracks} val ={inputValue}/>
+
             <button className="All_button" onClick={redirectToAll}>
                 All
             </button>
@@ -94,8 +114,6 @@ const Welcome = () => {
             <button className="top-left-button3" onClick={redirectToAudioList}>
                 Музон
             </button>
-
-
         </div>
     );
 };

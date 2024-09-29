@@ -8,12 +8,10 @@ import lombok.NonNull;
 import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -24,8 +22,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
 
 import java.time.Duration;
 import java.util.Collections;
@@ -34,12 +31,12 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
 @AllArgsConstructor
-
+@EnableJpaRepositories( basePackages ="ex.springsecurity_1805.Repositories")
 public class Configuration1{
     UserRepository repository;
     CustomOidcUserService customOidcUserService;
+
     @Bean
     public UserDetailsService userDetailsService(){
        /* UserDetails admin0 = User.builder().username("admin0").password(encoder.encode("52")).roles("ADMIN").build();
@@ -55,11 +52,10 @@ public class Configuration1{
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "api/login", "/api/audio/**", "/api/audioName/**","api/authorization","/api/checking","/api/uploadTrailer","login/oauth2/authorization/github","/login/oauth2/git","/login/oauth2/code/github","/api/audioCount","/api/user/withGithub/{id}").permitAll()
+                        .requestMatchers( "api/login", "/api/audio/**", "/api/audioName/**","api/authorization","/api/checking","/api/uploadTrailer","login/oauth2/authorization/github","/login/oauth2/git","/login/oauth2/code/github","/api/audioCount","/api/user/withGithub/{id}","/api/searchOfTrack/{name}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/user").permitAll()// Разрешить доступ без аутентификации
                         .requestMatchers("/newUser").anonymous() // Доступно только анонимным пользователям
                         .requestMatchers("/api/**").authenticated()
-                                .requestMatchers("https://localhost:3000/profile").authenticated()
                                 .requestMatchers("/ws/**").permitAll()
 
                 )
@@ -96,22 +92,7 @@ public class Configuration1{
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(@NonNull CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("https://localhost:3000").allowCredentials(true);
-            }
-        };
-    }
-   /* @Bean
-    public FilterRegistrationBean<SameSiteFilter> sameSiteFilter() {
-        FilterRegistrationBean<SameSiteFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(new SameSiteFilter());
-        registrationBean.addUrlPatterns("/*");
-        return registrationBean;
-    }*/
+
     @Bean
     public CookieSameSiteSupplier applicationCookieSameSiteSupplier() {
         return CookieSameSiteSupplier.ofStrict().whenHasName("JSESSIONID");
