@@ -3,6 +3,7 @@ package ex.springsecurity_1805.Controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import ex.springsecurity_1805.Models.Audio;
+import ex.springsecurity_1805.Models.Img;
 import ex.springsecurity_1805.Models.Views;
 
 import ex.springsecurity_1805.Repositories.AudioRepository;
@@ -11,6 +12,7 @@ import ex.springsecurity_1805.services.UserDEtailsService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,13 +33,11 @@ public class RestControllerForAudio {
     private final AudioRepository audioRepository;
     private final RedisService service;
 
-    @Transactional
+
     @GetMapping("/audio/{id}")
     public ResponseEntity<?> getAudio(@PathVariable Long id) {
-
-
        Audio audio =  service.getAudioById(id);
-        return ResponseEntity.ok()
+         return ResponseEntity.ok()
                 .contentType(MediaType.valueOf(audio.getContentType()))
                 .contentLength(audio.getSize())
                 .body(new InputStreamResource(new ByteArrayInputStream(audio.getBuffer())));
@@ -65,9 +65,17 @@ public class RestControllerForAudio {
     public Audio audioName(@PathVariable Long id) {
        /* Optional<Audio> opt = audioRepository.findAudioById(id);
         return opt.map(audio -> Map.of("name", audio.getName())).orElseGet(() -> Map.of("name", "Track"));*/
-        Optional<Audio> opt = audioRepository.findAudioById(id);
+        Optional<Audio> opt = audioRepository.findAudioById(id).stream().findFirst();
         return opt.orElse(null);
     }
+    @JsonView(Views.AudioImage.class)
+    @GetMapping("/audio/image/{name}")
+    public Audio getImageById(@PathVariable String name) {
+        // Получаем аудио объект по имени
+        Optional<Audio> optionalAudio = audioRepository.findTopByNameOrderByIdAsc(name);
+        return optionalAudio.orElse(null);
+    }
+
 
 
     @GetMapping("/audioInfo/{id}")
@@ -90,6 +98,15 @@ public class RestControllerForAudio {
     public List<String> playList(@AuthenticationPrincipal UserDEtailsService user1) {
         return new ArrayList<>(audioRepository.findAllByOrderByIdAsc());
 
+    }
+    @GetMapping("/nextAudios")
+    public List<?> nextTracks(@RequestParam("id") Long idCurrentTrack,@RequestParam("direction")String direction) {
+        if(Objects.equals(direction, "forward"))
+            return audioRepository.findNextFiveTracks(idCurrentTrack);
+        else if (Objects.equals(direction,"reverse"))
+            return audioRepository.findPreviousFiveTracks(idCurrentTrack);
+        else
+            return List.of("Укажите направление треков");
     }
 
 }

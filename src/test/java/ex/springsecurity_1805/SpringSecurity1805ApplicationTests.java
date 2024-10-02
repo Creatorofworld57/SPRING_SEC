@@ -14,6 +14,7 @@ public class SpringSecurity1805ApplicationTests {
 
 
 
+
 	@Test
 	public void testMyService() {
 		// тестируем myService

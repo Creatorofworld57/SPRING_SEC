@@ -58,11 +58,10 @@ public class Configuration1{
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "api/login", "/api/audio/**", "/api/audioName/**","api/authorization","/api/checking","/api/uploadTrailer","login/oauth2/authorization/github","/login/oauth2/git","/login/oauth2/code/github","/api/audioCount","/api/user/withGithub/{id}","/api/searchOfTrack/{name}").permitAll()
+                        .requestMatchers( "api/login", "/api/audio/**", "/api/audioName/**","api/authorization","/api/checking","/api/uploadTrailer","login/oauth2/authorization/github","/login/oauth2/git","/login/oauth2/code/github","/api/audioCount","/api/user/withGithub/{id}","/api/searchOfTrack/{name}","/api/nextAudios").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/user").permitAll()// Разрешить доступ без аутентификации
                         .requestMatchers("/newUser").anonymous() // Доступно только анонимным пользователям
                         .requestMatchers("/api/**").authenticated()
-                                .requestMatchers("https://localhost:3000/profile").authenticated()
                                 .requestMatchers("/ws/**").permitAll()
 
                 )

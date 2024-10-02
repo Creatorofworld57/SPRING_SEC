@@ -232,7 +232,7 @@ public class ServiceApp {
        List<Audio> list = audioRepository.findByNameContainingIgnoreCase(name);
        if(list.isEmpty()){
            String translate =ServiceHelperFunctions.KeyboardLayoutConverter.convertToEnglish(name);
-          list =audioRepository.findByNameContainingIgnoreCase(translate);
+          list = audioRepository.findByNameContainingIgnoreCase(translate);
           return  list.stream()
                    .sorted(Comparator.comparingInt(audio -> ServiceHelperFunctions.levenshteinDistance(audio.getName(),translate ))).collect(Collectors.toList());
        }

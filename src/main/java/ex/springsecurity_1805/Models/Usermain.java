@@ -44,8 +44,14 @@ public class Usermain {
     @Column(name = "socials")
     private List<String> social = new ArrayList<>();
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_playlists", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "idOfPlaylists")
+    private List<Long> idOfPlaylists = new ArrayList<>();
+
 
     public void addImgToProduct(Img img) {img.setUser(this);}
+    public void addPlaylistToUser(Playlist playlist) {playlist.setUser(this);}
 
 
 }

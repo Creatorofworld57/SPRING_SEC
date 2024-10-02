@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
 
-
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +29,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+
 
 @CrossOrigin(origins="https://localhost:3000",allowCredentials = "true")
 @org.springframework.web.bind.annotation.RestController
@@ -88,7 +88,7 @@ public class RestController {
         }
         else{
             if(principal!=null){
-                System.out.println(" авторизован"+principal.getName()+principal.getAttributes());
+                System.out.println(" авторизован"+principal.getName());
                 Object loginValue = principal.getAttributes().get("login");
                 System.out.println(loginValue);
                if(rep.findByName(loginValue.toString()).isEmpty()){
@@ -173,6 +173,7 @@ public class RestController {
     public void receivingSocials(@RequestBody List<String>socials,@AuthenticationPrincipal UserDEtailsService user1){
         rep.findByName(user1.getUsername()).ifPresent(Usermain -> new Usermain().setSocial(socials));
     }
+    
     @GetMapping("/trailer")
     public ResponseEntity<?> getTrailer() {
         Trailer trailer = trailerRepository.findById(1L).orElse(null);
