@@ -49,7 +49,7 @@ public class Usermain {
     @Column(name = "idOfPlaylists")
     private List<Long> idOfPlaylists = new ArrayList<>();
 
-
+    private Long lastTrack;
     public void addImgToProduct(Img img) {img.setUser(this);}
     public void addPlaylistToUser(Playlist playlist) {playlist.setUser(this);}
 

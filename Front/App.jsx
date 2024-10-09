@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React from 'react';
+import {BrowserRouter as Router, Routes, Route, useLocation} from 'react-router-dom';
 import Welcome from './Welcome';
 import Loginpage from './Loginpage';
 import NotFoundPage from './NotFoundPage';
@@ -13,33 +13,53 @@ import './Styles/Audio.css';
 import AudioPlaylist from './AudioPlaylist';
 import { AudioUpload } from './AudioUpload';
 import PrivateRoute from './PrivateRoutes/PrivateRoute';
+import ContextForAudio from './HelperModuls/ContextForAudio';
+import Playlist from './Playlist';
+import Home from "./Home";
 
-import ContextForAudio from "./HelperModuls/ContextForAudio";
+const Layout = ({ children }) => {
+    const location = useLocation(); // Получаем текущее местоположение
 
-const App = () => {
-
+    // Проверяем текущий маршрут и скрываем header на странице "/home"
+    const showHeader =
+        location.pathname !== '/' &&
+        location.pathname !== '/login' &&
+        location.pathname !== '/update' &&
+        location.pathname !== '/reg';
 
     return (
-            <ContextForAudio>
-            <Router>
-                <AudioPlayer />
-                <Routes>
-                    <Route path="/" element={<Welcome />} />
-                    <Route path="/login" element={<Loginpage />} />
-                    <Route path="*" element={<NotFoundPage />} />
-                    <Route path="/audio_upload" element={<AudioUpload />} />
-                    <Route element={<PrivateRoute />}>
-                        <Route path="/profile" element={<Profile />} />
-                        <Route path="/all" element={<All />} />
-                        <Route path="/id" element={<Id />} />
-                        <Route path="/audio_playlist" element={<AudioPlaylist />} />
-                        <Route path="/update" element={<Update />} />
-                    </Route>
-                    <Route path="/reg" element={<UserForm />} />
-                </Routes>
-            </Router>
-            </ContextForAudio>
+        <>
+            {showHeader && <AudioPlayer />}  {/* Условный рендеринг Header */}
+            {children}
+        </>
+    );
+};
 
+const App = () => {
+    return (
+        <ContextForAudio>
+            <Router>
+                <Layout>
+                    <Routes>
+                        <Route path="/login" element={<Loginpage />} />
+                        <Route path="*" element={<NotFoundPage />} />
+                        <Route path="/" element={<Home />} />
+                        <Route path="/reg" element={<UserForm />} />
+                        <Route element={<PrivateRoute />}>
+                            <Route path="/profile" element={<Profile />} />
+                            <Route path="/all" element={<All />} />
+                            <Route path="/id" element={<Id />} />
+                            <Route path="/update" element={<Update />} />
+                            <Route path="/profile/playlist" element={<Playlist />} />
+                            <Route path="/home" element={<Welcome />} />
+                            <Route path="/audio_upload" element={<AudioUpload />} />
+                            <Route path="/audio_playlist" element={<AudioPlaylist />} />
+                        </Route>
+
+                    </Routes>
+                </Layout>
+            </Router>
+        </ContextForAudio>
     );
 };
 

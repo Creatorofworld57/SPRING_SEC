@@ -29,9 +29,10 @@ public class Audio implements Serializable {
     private Long Size;
     @JsonView(Views.Public.class)
     private String Author;
-    @JsonView({Views.Public.class, Views.AudioImage.class})
+    @JsonView({Views.AudioImage.class})
     private byte[] image;
-
+    @JsonView({Views.Public.class})
+    private byte[] imagesc;
 
     public Audio() {
 

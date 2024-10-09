@@ -10,11 +10,14 @@ C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecuri
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Models\Usermain.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\SpringSecurity1805Application.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Models\Img.java
+C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Models\Playlist.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Models\Application.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Models\Audio.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Controllers\ControllerF.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Config\CustomOidcUserService.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Repositories\ImageRepository.java
+C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Controllers\ControllerForPlaylists.java
+C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\services\ServiceForPlaylists.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\services\MyUserDetailsService.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Models\Socials.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Controllers\RestControllerForUserCRUD.java
@@ -27,4 +30,5 @@ C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecuri
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Controllers\RestControllerForImg.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\RedisRepositories\AudioRedisRepository.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Repositories\UserRepository.java
+C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Repositories\PlaylistRepository.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Config\Configuration1.java

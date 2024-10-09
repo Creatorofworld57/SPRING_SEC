@@ -1,95 +1,177 @@
-import React, {useState, useEffect, useRef, useContext, useCallback} from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import './Styles/Audio.css';
-import useSound from 'use-sound';
-import { AiFillPlayCircle, AiFillPauseCircle } from 'react-icons/ai';
+import { AiFillPauseCircle, AiFillPlayCircle } from 'react-icons/ai';
 import { BiSkipNext, BiSkipPrevious } from 'react-icons/bi';
 import { IconContext } from 'react-icons';
-import {MyContext} from "./HelperModuls/ContextForAudio";
+import { MyContext } from "./HelperModuls/ContextForAudio";
+import { Howl, Howler } from 'howler';
+import {SiTruenas} from "react-icons/si"; // Импортируем Howler
 
 const AudioPlayer = ({ audioData }) => {
-    const [counter, setCounter] = useState(152);
+    const [userTrack, setUserTrack] = useState(152);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [refka, setRefka] = useState();
     const [name, setName] = useState('Track');
     const [currTime, setCurrTime] = useState({ min: '0', sec: '0' });
     const [totalTime, setTotalTime] = useState({ min: '0', sec: '0' });
     const [seconds, setSeconds] = useState(0);
-    const [volume, setVolume] = useState(1); // Volume state
-    const [ready, setReady] = useState(false);
-
-
-
+    const [volume, setVolume] = useState(0.5);
+    const [counter, setCounter] = useState(userTrack);
+    const [tracks, setTracks] = useState([]);
     const animationRef = useRef();
     const progressBarRef = useRef();
     const progressBarBackendRef = useRef();
+    const [isActive, setIsActive] = useState(false);
+    const [sound, setSound] = useState(null); // Состояние для хранения экземпляра Howl
+    const [playOrNo, setPlayOrNo] = useState(null);
+    const [duration, setDuration] = useState(0);// Состояние для хранения экземпляра Howl
+    const [first, setFirst] = useState(0);// Состояние для хранения экземпляра Howl
 
-    const {data, setDat} = useContext(MyContext); // Деструктурируем setDat
+    const { data, setDat } = useContext(MyContext);
 
-    const [play, { pause, duration, sound, stop}] = useSound(
-        `https://localhost:8080/api/audio/${counter}`,
-        {
-            volume: volume, // Use the volume state here
-            format: ['mp3'],
-            onend: () => setIsPlaying(false),
-
-        }
-    );
-
-    const loadTrack = async (newCounter = counter) => {
+    const firstCall = async () => {
         try {
-            setIsLoading(true);
-            const response = await fetch(`https://localhost:8080/api/audioName/${newCounter}`);
-            const trackName = await response.json();
-            setName(trackName.name);
+            const response = await fetch('https://localhost:8080/api/lastTrack', {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const resp = parseInt(await response.text(), 10);
+                setCounter(resp);
+            } else {
+                setUserTrack(152);
+            }
         } catch (error) {
-            console.error("Error loading track", error);
-        } finally {
-            setIsLoading(false);
+            console.error('Error fetching last track:', error);
+            setUserTrack(152);
         }
     };
 
-    const loadTrackByData = async ()=>{
-        try {
-            setIsLoading(true);
-            const response = await fetch(
-                `https://localhost:8080/api/audioName/${audioData}`
-            );
-            const trackName = await response.json();
-
-            setName(trackName.name);
-            setIsPlaying(false);
-            setReady(true)
-
-        } catch (error) {
-            console.error('Error loading track:', error.message);
-        } finally {
-            setIsLoading(false);
+    const loadTrack = useCallback(async newCounter => {
+        setIsLoading(true);
+        if (sound) {
+            sound.unload(); // Разгружаем предыдущий трек перед загрузкой нового
         }
-    }
 
+        const newSound = new Howl({
+            src: [`https://localhost:8080/api/audio/${counter}`],
+            volume: volume,
+            format: ['mp3'],
+            onend: forward, // Следующий трек при завершении
+            onload: () => {
+                setDuration(newSound.duration());
+                setTotalTime(formatTime(newSound.duration()));
+                setIsLoading(false);
+            },
+            onplay: () => {
+                setIsPlaying(true);
+                animationRef.current = requestAnimationFrame(updateProgress);
+            },
+            onpause: () => setIsPlaying(false),
+            onseek: () => {
+                animationRef.current = requestAnimationFrame(updateProgress);
+            },
+
+        });
+        const response = await fetch(`https://localhost:8080/api/audioName/${counter}`);
+        const trackName = await response.json();
+        await setName(trackName.name);
+        await setSound(newSound);
+    }, [counter, volume]);
+
+    // Форматирование времени
+    const formatTime = (timeInSeconds) => {
+        const minutes = Math.floor(timeInSeconds / 60);
+        const seconds = Math.floor(timeInSeconds % 60);
+        return {
+            min: minutes,
+            sec: seconds < 10 ? `0${seconds}` : seconds
+        };
+    };
+
+        // Воспроизведение или пауза трека
+
+        // Переключение на предыдущий трек
+
+        // Изменение громкости
+        const handleVolumeChange = (e) => {
+            const newVolume = parseFloat(e.target.value);
+            setVolume(newVolume);
+            if (sound) {
+                sound.volume(newVolume);
+            }
+        };
 
     useEffect(() => {
-        stop()
+        firstCall();
+    }, []);
+
+    useEffect(() => {
+        if (userTrack !== null) {
+            setCounter(userTrack);
+        }
+    }, [userTrack]);
+
+    // Загрузка трека
+
+
+    const fetchImg = async () => {
+        if (name) {
+            try {
+                const response = await fetch(`https://localhost:8080/api/audio/image/${name}`);
+                if (response.ok) {
+                    const buf = await response.json();
+                    const buf2 = buf.image;
+                    if (buf2) {
+                        setRefka(`data:image/jpeg;base64,${buf2}`);
+                    } else {
+                        console.error('Image data not found in response');
+                    }
+                } else {
+                    console.error('Failed to fetch image:', response.status);
+                }
+            } catch (error) {
+                console.error('Error fetching image:', error);
+            }
+        }
+    };
+
+    useEffect(() => {
+        fetchImg();
+    }, [name]);
+
+    const keepTrack = () => {
+        fetch(`https://localhost:8080/api/lastTrack?id=${counter}`, { method: 'POST', credentials: 'include' });
+    };
+
+    useEffect(() => {
         loadTrack();
-        fetchImage();
+        keepTrack();
+        likeOrNo();
+        setIsActive(true);
     }, [counter]);
 
-    useEffect(()=>{
-        if(data !=null)
-            setCounter(data)
-    },[data])
-
-
     useEffect(() => {
-        if (duration) {
-            const totalSec = duration / 1000;
-            const min = Math.floor(totalSec / 60);
-            const sec = Math.floor(totalSec % 60);
-            setTotalTime({ min, sec });
+        if (data != null) {
+            setCounter(data);
+            setIsPlaying(false);
         }
-    }, [duration]);
 
+    }, [data]);
+
+    const likeOrNo = async () => {
+        const response = await fetch(`https://localhost:8080/api/likeOrNo?track=${counter}`, { method: 'GET', credentials: 'include' });
+        if (response.ok) {
+            const isLiked = await response.json();
+            setIsActive(isLiked);
+        } else {
+            console.error('Ошибка запроса:', response.status);
+        }
+    };
+
+    // Функция для обновления прогресса
     const updateProgress = () => {
         if (sound && isPlaying) {
             const sec = sound.seek();
@@ -98,8 +180,8 @@ const AudioPlayer = ({ audioData }) => {
             const secRemain = Math.floor(sec % 60);
             setCurrTime({ min, sec: secRemain });
 
-            if (progressBarRef.current && duration) {
-                const progressPercentage = (sec / (duration / 1000)) * 100;
+            if (progressBarRef.current) {
+                const progressPercentage = (sec / (sound.duration())) * 100;
                 progressBarRef.current.style.width = `${progressPercentage}%`;
             }
 
@@ -108,141 +190,172 @@ const AudioPlayer = ({ audioData }) => {
     };
 
     useEffect(() => {
-        if (isPlaying) {
+
             animationRef.current = requestAnimationFrame(updateProgress);
-        } else {
-            cancelAnimationFrame(animationRef.current);
-        }
 
-        return () => cancelAnimationFrame(animationRef.current);
+
+
+
+
     }, [isPlaying]);
-
     useEffect(() => {
-        if (totalTime.min !== '0' || totalTime.sec !== '0') {
-            const hasReachedEnd = parseInt(currTime.min) === parseInt(totalTime.min) &&
-                parseInt(currTime.sec) === parseInt(totalTime.sec);
-
-            if (hasReachedEnd) {
-                forward();
-            }
+        if (!isLoading) {
+            sound.play()
+            setIsPlaying(true)
         }
-    }, [currTime, totalTime]);
 
 
+    }, []);
 
+    // Обработка нажатия на кнопку воспроизведения/паузы
     const playingButton = () => {
         if (!isPlaying) {
-            play();
-            setIsPlaying(true);
+            sound.play();
         } else {
-            pause();
+
+            sound.pause();
+
+        }
+
+    };
+    const reverse = useCallback(async () => {
+        // Если tracks пустой (null) или пустой массив
+        if (tracks === null || tracks.length === 0) {
+            console.log("No tracks available.");
+            return; // Если треков нет, выходим из функции
+        }
+
+        console.log(`Reversing from track ID: ${counter}`);
+
+        // Если трек воспроизводился, останавливаем его
+        if (isPlaying) {
+            sound.stop();
             setIsPlaying(false);
         }
-    }
 
-    const reverse = () => {
-        if (counter !== 152) {
-            stop();
-            setReady(false)
-            setCounter((prev) => {
-                const newCounter = prev - 50;
-                loadTrack(newCounter);
-                return newCounter;
-            });
+        // Найдем текущий индекс трека по ID (counter)
+        const currentTrackIndex = tracks.findIndex(value => value === counter);
+
+        // Переход к предыдущему треку, если это не первый трек
+        if (currentTrackIndex > 0) {
+            const newCounter = tracks[currentTrackIndex - 1]; // Переход к предыдущему ID трека
+            setCounter(newCounter); // Устанавливаем новый ID трека
+            await loadTrack(newCounter); // Загружаем трек
+        } else {
+            // Если текущий трек первый, делаем новый запрос для получения предыдущих треков
+            const response = await fetch(`https://localhost:8080/api/nextAudios?id=${counter}&direction=reverse`); // Здесь предполагается, что сервер может предоставить предыдущие треки
+            const newTracks = await response.json();
+
+            setTracks(newTracks); // Обновляем массив треков
+            if (newTracks.length > 0) {
+                setCounter(newTracks[newTracks.length - 1]); // Устанавливаем последний трек из нового списка как текущий
+                await loadTrack(newTracks[newTracks.length - 1]); // Загружаем последний трек из нового списка
+            }
         }
-    };
+    }, [counter, tracks, isPlaying]);
 
     const forward = useCallback(async () => {
-        const response = await fetch("https://localhost:8080/api/audioCount");
-        const read = parseInt(await response.text(), 10);
-        if (read >= counter) {
-            stop();
+        if ((tracks === null || tracks.length === 0) && sound !==null) {
+            sound.stop();
             setIsPlaying(false)
-            setCounter((prev) => prev + 50);
-        }
-    }, [counter, stop]);
-    const handleProgressClick = (e) => {
-        if (progressBarBackendRef.current && sound && duration) {
-            const { left, width } = progressBarBackendRef.current.getBoundingClientRect();
-            const clickX = e.clientX - left;
-            const newTime = (clickX / width) * (duration / 1000);
-            sound.seek(newTime);
-            setSeconds(newTime);
-
-            const min = Math.floor(newTime / 60);
-            const secRemain = Math.floor(newTime % 60);
-            setCurrTime({ min, sec: secRemain });
-
-            if (progressBarRef.current) {
-                const progressPercentage = (newTime / (duration / 1000)) * 100;
-                progressBarRef.current.style.width = `${progressPercentage}%`;
+            const response = await fetch(`https://localhost:8080/api/nextAudios?id=${counter}&direction=forward`);
+            const newTracks = await response.json();
+            setTracks(newTracks);
+            if (newTracks.length > 0) {
+                setCounter(newTracks[0]);
             }
-        }
-    };
-
-    const fetchImage = async () => {
-        try {
-            // Ожидаем завершения запроса к локальному API, чтобы получить информацию о треке
-            const trackInfoResponse = await fetch(`https://localhost:8080/api/audioName/${counter}`);
-            const trackInfo = await trackInfoResponse.json(); // Получаем данные в формате JSON
-
-            // Извлекаем имя трека и автора
-            const trackk = trackInfo.name;
-            const artist = trackInfo.Author;
-
-            // Логируем для проверки
-            console.log(`Трек: ${trackk}, Исполнитель: ${artist}`);
-
-            // Делаем запрос к API Last.fm с использованием полученных данных
-            const response = await fetch(`https://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=f8e1f7c1dfae878f08549b94d72d7632&artist=${encodeURIComponent(artist)}&track=${encodeURIComponent(trackk)}&format=json`);
-            const js = await response.json(); // Здесь вызываем json()
-
-            // Логируем ответ от Last.fm API для отладки
-            console.log(js);
-
-            // Функция для получения изображения среднего размера
-            const getMediumImage = (track) => {
-                if (track.album && track.album.image) {
-                    const mediumImage = track.album.image.find(img => img.size === "medium");
-                    return mediumImage ? mediumImage['#text'] : null;
-                } else {
-                    console.error('Альбом или изображения не найдены в данных трека');
-                    return null;
-                }
-            };
-
-            // Устанавливаем результат в refka
-            const mediumImageURL = getMediumImage(js.track);
-
-            if (mediumImageURL) {
-                console.log(`Изображение среднего размера: ${mediumImageURL}`);
-                setRefka(mediumImageURL); // Устанавливаем изображение
+        } else if(sound !==null) {
+            sound.stop();
+            const currentTrackIndex = tracks.findIndex(value => value === counter);
+            if (currentTrackIndex !== -1 && currentTrackIndex < tracks.length - 1) {
+                setCounter(tracks[currentTrackIndex + 1]);
             } else {
-                console.error('Изображение среднего размера не найдено.');
+                const response = await fetch(`https://localhost:8080/api/nextAudios?id=${counter}&direction=forward`);
+                const newTracks = await response.json();
+                setTracks(newTracks);
+                if (newTracks.length > 0) {
+                    setCounter(newTracks[0]);
+                }
             }
+        }
+    }, [counter, tracks, sound, isPlaying]);
+    useEffect(() => {
+        if (!isLoading && userTrack !== counter) {
+            sound.play()
+            setIsPlaying(true)
+        }
 
-        } catch (error) {
-            // Обработка ошибок
-            console.error('Ошибка при получении информации о треке или изображении:', error)
+
+    }, [isLoading]);
+    const handleProgressClick = (e) => {
+        if (progressBarBackendRef.current) {
+            const durationInSeconds = sound.duration();
+
+            if (durationInSeconds > 0) {
+                const { left, width } = progressBarBackendRef.current.getBoundingClientRect();
+                const clickX = e.clientX - left;
+                const newTime = (clickX / width) * durationInSeconds;
+
+
+
+                    sound.seek(newTime);
+                    const actualTime = sound.seek();
+                    setSeconds(actualTime);
+
+                    const min = Math.floor(actualTime / 60);
+                    const secRemain = Math.floor(actualTime % 60);
+                    setCurrTime({ min, sec: secRemain });
+
+                    if (progressBarRef.current) {
+                        const progressPercentage = (actualTime / durationInSeconds) * 100;
+                        progressBarRef.current.style.width = `${progressPercentage}%`;
+                    }
+
+            }
         }
     };
-
-
 
     // Handle volume change
-    const handleVolumeChange = (e) => {
-        setVolume(e.target.value);
+
+    const toggleHeart = async() => {
+        setIsActive(!isActive);
+        if(isActive===false) {
+            console.log("stop")
+            await fetch(`https://localhost:8080/api/likedTrack?track=${counter}`, {method: 'POST',credentials:'include'})
+            console.log("ready")
+        }
+        else
+        {
+            await fetch(`https://localhost:8080/api/likedTrackDelete?track=${counter}`, {method: 'DELETE',credentials:'include'})
+        }
     };
+
+
 
     return (
         <div id="audioPlayer" className="component">
-            <img className="musicCover" src={refka} alt="Изображение" />
-            <div>
-                <h3 className="titl">{name}</h3>
-            </div>
+            {!isLoading ? (
+                    <img className="musicCover" src={refka} alt="Изображение"/>
+
+                ):
+                ( <div className="skeleton-image"></div>
+
+
+                )}
+            {!isLoading ? (
+
+
+                    <h3 className="titl">{name}</h3>
+):
+    (
+        <div className="skeleton-title"/>
+
+
+            )}
+
             <div className="time">
-                <p>{currTime.min}:{currTime.sec < 10 ? "0"+currTime.sec:currTime.sec }</p>
-                <p>{totalTime.min}:{totalTime.sec < 10 ?"0"+totalTime.sec:totalTime.sec }</p>
+                <p>{currTime.min}:{currTime.sec < 10 ? "0" + currTime.sec : currTime.sec}</p>
+                <p>{totalTime.min}:{totalTime.sec}</p>
             </div>
             <div
                 className="progress-bar-backend"
@@ -264,28 +377,31 @@ const AudioPlayer = ({ audioData }) => {
                 />
             </div>
 
+            <div className={`scattering ${isActive ? 'active' : ''}`}
+                 onClick={toggleHeart}>
+            </div>
             <div>
                 <button className="playButton" onClick={reverse}>
-                    <IconContext.Provider value={{ size: "3em", color: "#27AE60" }}>
-                        <BiSkipPrevious />
+                    <IconContext.Provider value={{size: "3em", color: "#27AE60"}}>
+                        <BiSkipPrevious/>
                     </IconContext.Provider>
                 </button>
                 {!isPlaying ? (
                     <button className="playButton" onClick={playingButton}>
-                        <IconContext.Provider value={{ size: "3em", color: "#27AE60" }}>
-                            <AiFillPlayCircle />
+                        <IconContext.Provider value={{size: "3em", color: "#27AE60"}}>
+                            <AiFillPlayCircle/>
                         </IconContext.Provider>
                     </button>
                 ) : (
                     <button className="playButton" onClick={playingButton}>
-                        <IconContext.Provider value={{ size: "3em", color: "#27AE60" }}>
-                            <AiFillPauseCircle />
+                        <IconContext.Provider value={{size: "3em", color: "#27AE60"}}>
+                            <AiFillPauseCircle/>
                         </IconContext.Provider>
                     </button>
                 )}
                 <button className="playButton" onClick={forward}>
-                    <IconContext.Provider value={{ size: "3em", color: "#27AE60" }}>
-                        <BiSkipNext />
+                    <IconContext.Provider value={{size: "3em", color: "#27AE60"}}>
+                        <BiSkipNext/>
                     </IconContext.Provider>
                 </button>
             </div>

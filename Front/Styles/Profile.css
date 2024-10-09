@@ -1,14 +1,7 @@
-body {
-    background-color: #2e2e2e; /* Темно-серый цвет */
-    color: #ffffff; /* Белый цвет текста для контраста */
-    font-family: Arial, sans-serif; /* Шрифт для текста */
-    margin: 0; /* Удалить отступы по умолчанию */
-    padding: 0; /* Удалить внутренние отступы по умолчанию */
-    text-align: center; /* Центрирование текста */
-}
+
 
 .back_up {
-    position: absolute; /* фиксируем положение кнопки */
+    position: fixed; /* фиксируем положение кнопки */
     top: -10px;       /* расположение сверху */
     left: 10px;      /* расположение слева */
     z-index: 1001;   /* чтобы кнопка была выше других элементов */
@@ -51,17 +44,23 @@ nav {
 main {
     padding: 50px;
 }
+.gold {
+    z-index: 4;
+    width: 100vw; /* видео на всю ширину экрана */
+    top: 10px; /* отступ сверху 30px */
+    margin-bottom: 51px; /* отступ снизу 51px */
+}
 
 p {
     margin: 20px;
-}
-.burger-btn {
-    width: 30px;
-    height: 30px;
-    margin-left: 1800px;
-    position: relative;
-    cursor: pointer;
-}
+}.burger-btn {
+     width: 30px;
+     height: 30px;
+     position: absolute;
+     right: 20px; /* Отступ от правого края экрана */
+     top: 1px; /* Отступ сверху, если требуется */
+     cursor: pointer;
+ }
 
 .burger-btn span {
     display: block;
@@ -75,7 +74,7 @@ p {
 
 /* Positioning the lines */
 .burger-btn .line1 {
-    top: 6px;
+   top: 6px;
 }
 
 .burger-btn .line2 {
@@ -89,7 +88,7 @@ p {
 /* Active state for each line */
 .burger-btn .line1.active {
     transform: rotate(180deg);
-   margin-outside: 8px;
+
 }
 
 .burger-btn .line2.active {
@@ -204,4 +203,30 @@ p {
     border-radius: 5px;
     display: inline-block;
     font-family: 'Arial', sans-serif;
+}
+.playlists-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.playlist-item {
+    width: 150px;
+    margin: 10px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.playlist-item img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.playlist-item p {
+    margin-top: 10px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
 }

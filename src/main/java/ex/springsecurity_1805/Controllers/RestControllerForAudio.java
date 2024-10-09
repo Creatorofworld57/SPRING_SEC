@@ -3,19 +3,21 @@ package ex.springsecurity_1805.Controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import ex.springsecurity_1805.Models.Audio;
-import ex.springsecurity_1805.Models.Img;
+import ex.springsecurity_1805.Models.BackgroundImage;
+import ex.springsecurity_1805.Models.Usermain;
 import ex.springsecurity_1805.Models.Views;
 
 import ex.springsecurity_1805.Repositories.AudioRepository;
+import ex.springsecurity_1805.Repositories.BackImageRepository;
+import ex.springsecurity_1805.Repositories.UserRepository;
 import ex.springsecurity_1805.services.RedisService;
 import ex.springsecurity_1805.services.UserDEtailsService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,12 +34,14 @@ import java.util.*;
 public class RestControllerForAudio {
     private final AudioRepository audioRepository;
     private final RedisService service;
+    private final UserRepository userRepository;
+    private final BackImageRepository backImageRepository;
 
 
     @GetMapping("/audio/{id}")
     public ResponseEntity<?> getAudio(@PathVariable Long id) {
-       Audio audio =  service.getAudioById(id);
-         return ResponseEntity.ok()
+        Audio audio = service.getAudioById(id);
+        return ResponseEntity.ok()
                 .contentType(MediaType.valueOf(audio.getContentType()))
                 .contentLength(audio.getSize())
                 .body(new InputStreamResource(new ByteArrayInputStream(audio.getBuffer())));
@@ -45,7 +49,12 @@ public class RestControllerForAudio {
 
     @PostMapping("/audio")
     public void audioSend(@RequestParam("file") MultipartFile file) throws IOException {
-        Audio audio = new Audio();
+        BackgroundImage backgroundImage = new BackgroundImage();
+        backgroundImage.setImage(file.getBytes());
+        backgroundImage.setSize(file.getSize());
+        backgroundImage.setContentType(file.getContentType());
+        backImageRepository.save(backgroundImage);
+       /* Audio audio = new Audio();
 
         StringBuilder str = new StringBuilder(Objects.requireNonNull(file.getOriginalFilename()));
         str.delete(str.indexOf("."), str.lastIndexOf("3") + 1);
@@ -56,8 +65,16 @@ public class RestControllerForAudio {
         audio.setContentType(file.getContentType());
         audio.setSize(file.getSize());
         audioRepository.save(audio);
-        System.out.println(audio.getId());
+        System.out.println(audio.getId());*/
 
+    }
+    @GetMapping("/background/{id}")
+    public ResponseEntity<?> getBackground(@PathVariable Long id) {
+       BackgroundImage image = backImageRepository.findBackgroundImageById(id).get();
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf(image.getContentType()))
+                .contentLength(image.getSize())
+                .body(new InputStreamResource(new ByteArrayInputStream(image.getImage())));
     }
 
     @JsonView(Views.Public.class)
@@ -107,6 +124,18 @@ public class RestControllerForAudio {
             return audioRepository.findPreviousFiveTracks(idCurrentTrack);
         else
             return List.of("Укажите направление треков");
+    }
+    @GetMapping("/lastTrack")
+    public String lastTrackId(@AuthenticationPrincipal UserDetails userDetails) {
+        System.out.println("lastTrack");
+        return Long.toString(userRepository.findByName(userDetails.getUsername()).get().getLastTrack());
+
+    }
+    @PostMapping("/lastTrack")
+    public void lastTrack(@AuthenticationPrincipal UserDetails userDetails,@RequestParam("id")Long id){
+        Usermain user = userRepository.findByName(userDetails.getUsername()).get();
+        user.setLastTrack(id);
+        userRepository.save(user);
     }
 
 }

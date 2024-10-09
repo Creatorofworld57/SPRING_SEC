@@ -58,7 +58,11 @@ public class Configuration1{
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "api/login", "/api/audio/**", "/api/audioName/**","api/authorization","/api/checking","/api/uploadTrailer","login/oauth2/authorization/github","/login/oauth2/git","/login/oauth2/code/github","/api/audioCount","/api/user/withGithub/{id}","/api/searchOfTrack/{name}","/api/nextAudios").permitAll()
+                        .requestMatchers( "api/login", "/api/audio/**", "/api/audioName/**","api/authorization","/api/checking",
+                                "/api/uploadTrailer","login/oauth2/authorization/github",
+                                "/login/oauth2/git","/login/oauth2/code/github","/api/audioCount",
+                                "/api/user/withGithub/{id}","/api/searchOfTrack/{name}",
+                                "/api/background/**","/api/nextAudios").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/user").permitAll()// Разрешить доступ без аутентификации
                         .requestMatchers("/newUser").anonymous() // Доступно только анонимным пользователям
                         .requestMatchers("/api/**").authenticated()
@@ -69,7 +73,7 @@ public class Configuration1{
                 .formLogin(formLogin -> formLogin
                         .loginPage("https://localhost:3000/login") // Путь к странице логина
                         .loginProcessingUrl("/perform_login") // URL для обработки логина
-                        .defaultSuccessUrl("https://localhost:3000/profile")
+                        .defaultSuccessUrl("https://localhost:3000/")
                         // URL после успешного логина
                         .failureUrl("https://localhost:3000/login")
                         // URL после неудачного логина

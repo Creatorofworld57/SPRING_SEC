@@ -28,7 +28,7 @@ export const AudioUpload =()=>{
     return (
         <div className="form-container">
             <h1>Загрузить трек</h1>
-            <form id="userForm" onSubmit={handleSubmit} encType="multipart/form-data">
+            <form id="userForm" onSubmit={handleSubmit} encType="application/octet-stream">
 
                 <div className="file-input-container">
                     <label className="file-input-label" htmlFor="file">Выберите музон</label>

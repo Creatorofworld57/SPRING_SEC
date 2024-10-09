@@ -30,6 +30,7 @@ const Loginpage = () => {
               <h1>Sign in to Base</h1>
 
               <input
+                  className='inputLog'
                   type="text"
                   id="name"
                   name="name"
@@ -38,6 +39,7 @@ const Loginpage = () => {
               />
 
               <input
+                  className='inputLog'
                   type="password"
                   id="password"
                   name="password"

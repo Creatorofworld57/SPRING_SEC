@@ -61,10 +61,17 @@ const Update = () => {
 
             const userok = await response.json();
             setName(userok.name)
-            setTele(userok.tele)
-            setGit(userok.git)
+            userok.social.forEach(link => {
+                if (link.includes('github.com')) {
+                    setGit(link)  // Ссылка на GitHub
+                }
+                if (link.includes('t.me')) {
+                    setTele(link);  // Ссылка на Telegram
+                }
+            })
 
-        } catch (error) {
+        }
+        catch (error) {
             console.error('Error fetching user info', error);
         }
 
@@ -90,7 +97,7 @@ const Update = () => {
                     type="password"
                     id="password"
                     name="password"
-                    placeholder="Enter your Password"
+                    placeholder="Enter new Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />

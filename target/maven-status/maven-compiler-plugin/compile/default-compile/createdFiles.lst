@@ -1,6 +1,8 @@
 ex\springsecurity_1805\Repositories\TrailerRepository.class
+ex\springsecurity_1805\Controllers\ControllerForPlaylists.class
 ex\springsecurity_1805\Models\Trailer.class
 ex\springsecurity_1805\Repositories\ImageRepository.class
+ex\springsecurity_1805\Models\Playlist.class
 ex\springsecurity_1805\services\ServiceApp.class
 ex\springsecurity_1805\Models\Views.class
 ex\springsecurity_1805\services\ServiceHelperFunctions$KeyboardLayoutConverter.class
@@ -8,6 +10,7 @@ ex\springsecurity_1805\Controllers\RestController.class
 ex\springsecurity_1805\Models\Application.class
 ex\springsecurity_1805\Repositories\AudioRepository.class
 ex\springsecurity_1805\Models\Socials.class
+ex\springsecurity_1805\Models\Views$AudioImage.class
 ex\springsecurity_1805\Controllers\RestControllerForAudio.class
 ex\springsecurity_1805\Models\Application$ApplicationBuilder.class
 ex\springsecurity_1805\Models\Views$Public.class
@@ -26,6 +29,8 @@ ex\springsecurity_1805\Models\updateModel.class
 ex\springsecurity_1805\Controllers\RestControllerForImg.class
 ex\springsecurity_1805\Models\Audio.class
 ex\springsecurity_1805\Models\Views$Internal.class
+ex\springsecurity_1805\services\ServiceForPlaylists.class
+ex\springsecurity_1805\Repositories\PlaylistRepository.class
 ex\springsecurity_1805\Repositories\UserRepository.class
 ex\springsecurity_1805\RedisRepositories\AudioRedisRepository.class
 ex\springsecurity_1805\services\RedisService.class

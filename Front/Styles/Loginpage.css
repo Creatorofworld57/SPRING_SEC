@@ -68,3 +68,10 @@ input{
 .reg_ref:hover{
     text-decoration:underline;
 }
+.imgEntry{
+   top:300px;
+
+}
+.inputLog{
+    color: white;
+}

@@ -1,7 +1,7 @@
 /* Основное меню */
 .menu {
     position: fixed;
-    top: 60px;
+    top: 50px;
     right: 0px;
     display: flex;
     flex-direction: column;
@@ -11,7 +11,7 @@
     transition: all 1s;
     transform: translateX(130%);
     background-color: black;
-    border-top-left-radius: 20px; /* Добавьте это свойство для закругленных краев */
+   /* Добавьте это свойство для закругленных краев */
 }
 .menu.active {
     transform: translateX(0);
@@ -90,4 +90,50 @@ ul li a {
 .exit,.delete:hover{
     color: red;
 
+}
+
+.toggle-switch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px;
+}
+
+/* Скрываем стандартный чекбокс */
+.toggle-input {
+    display: none;
+}
+
+/* Стиль для лейбла переключателя */
+.toggle-label {
+    cursor: pointer;
+    width: 60px;
+    height: 34px;
+    background-color: #ccc;
+    border-radius: 34px;
+    position: relative;
+    transition: background-color 0.3s;
+}
+
+/* Стиль для ползунка переключателя */
+.toggle-label::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+
+/* Состояние переключателя в положении "включено" */
+.toggle-input:checked + .toggle-label {
+    background-color: #2e2e2e;
+}
+
+/* Ползунок переключателя при активном состоянии */
+.toggle-input:checked + .toggle-label::before {
+    transform: translateX(26px);
 }

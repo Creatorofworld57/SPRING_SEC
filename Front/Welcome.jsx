@@ -21,6 +21,7 @@ const Welcome = () => {
             });
             if (response.ok) {
                 const data = await response.json();
+                setTracks(null)
                 setTracks(data);  // Устанавливаем найденные треки в состояние
             } else {
                 setTracks([]);  // Если ничего не найдено, очищаем список
@@ -94,6 +95,7 @@ const Welcome = () => {
                     Enter name of track
                 </h1>
                 <input
+                    className={"inputForTracks"}
                     type="text"
                     id="userId"
                     placeholder="Enter name"
