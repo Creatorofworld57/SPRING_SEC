@@ -6,9 +6,7 @@ import NotFoundPage from './NotFoundPage';
 import AudioPlayer from './Audio';
 import Profile from './Profile';
 import UserForm from './RegisterPage';
-import Id from './ID';
 import Update from './Update';
-import All from './All';
 import './Styles/Audio.css';
 import AudioPlaylist from './AudioPlaylist';
 import { AudioUpload } from './AudioUpload';
@@ -47,8 +45,6 @@ const App = () => {
                         <Route path="/reg" element={<UserForm />} />
                         <Route element={<PrivateRoute />}>
                             <Route path="/profile" element={<Profile />} />
-                            <Route path="/all" element={<All />} />
-                            <Route path="/id" element={<Id />} />
                             <Route path="/update" element={<Update />} />
                             <Route path="/profile/playlist" element={<Playlist />} />
                             <Route path="/home" element={<Welcome />} />

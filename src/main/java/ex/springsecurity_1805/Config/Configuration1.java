@@ -4,13 +4,11 @@ package ex.springsecurity_1805.Config;
 import ex.springsecurity_1805.Repositories.AudioRepository;
 import ex.springsecurity_1805.Repositories.UserRepository;
 import ex.springsecurity_1805.services.MyUserDetailsService;
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,25 +18,20 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
 
 
 @Configuration
 @EnableWebSecurity
-@AllArgsConstructor
+@RequiredArgsConstructor
 @EnableJpaRepositories( basePackages ="ex.springsecurity_1805.Repositories")
 public class Configuration1{
-    UserRepository repository;
-    CustomOidcUserService customOidcUserService;
-    AudioRepository audioRepository;
+   private final UserRepository repository;
+   private final CustomOidcUserService customOidcUserService;
+   private final AudioRepository audioRepository;
+    @Value("${urlFront}")
+    String url;
     @Bean
     public UserDetailsService userDetailsService(){
        /* UserDetails admin0 = User.builder().username("admin0").password(encoder.encode("52")).roles("ADMIN").build();
@@ -46,6 +39,8 @@ public class Configuration1{
         UserDetails admin2 = User.builder().username("admin2").password(encoder.encode("18")).roles("USER").build();*/
      return new MyUserDetailsService(repository);
     }
+    private final SameSiteCookieFilter sameSiteCookieFilter;
+
     @Bean
     public AudioRepository audioRepository () {
       return  audioRepository ;
@@ -58,24 +53,24 @@ public class Configuration1{
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "api/login", "/api/audio/**", "/api/audioName/**","api/authorization","/api/checking",
-                                "/api/uploadTrailer","login/oauth2/authorization/github",
-                                "/login/oauth2/git","/login/oauth2/code/github","/api/audioCount",
-                                "/api/user/withGithub/{id}","/api/searchOfTrack/{name}",
-                                "/api/background/**","/api/nextAudios").permitAll()
+                        .requestMatchers("api/login", "/api/audio/**", "/api/audioName/**", "api/authorization", "/api/checking",
+                                "/api/uploadTrailer", "login/oauth2/authorization/github",
+                                "/login/oauth2/git", "/login/oauth2/code/github", "/api/audioCount",
+                                "/api/user/withGithub/{id}", "/api/searchOfTrack/{name}",
+                                "/api/background/**", "/api/nextAudios").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/user").permitAll()// Разрешить доступ без аутентификации
                         .requestMatchers("/newUser").anonymous() // Доступно только анонимным пользователям
                         .requestMatchers("/api/**").authenticated()
-                                .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
 
                 )
 
                 .formLogin(formLogin -> formLogin
-                        .loginPage("https://localhost:3000/login") // Путь к странице логина
+                        .loginPage(String.format("%s/login", url))
                         .loginProcessingUrl("/perform_login") // URL для обработки логина
-                        .defaultSuccessUrl("https://localhost:3000/")
+                        .defaultSuccessUrl(String.format("%s/home",url))
                         // URL после успешного логина
-                        .failureUrl("https://localhost:3000/login")
+                        .failureUrl(String.format("%s/login",url))
                         // URL после неудачного логина
                         .passwordParameter("password") // Параметр пароля
                         .usernameParameter("name") // Параметр имени пользователя
@@ -85,13 +80,13 @@ public class Configuration1{
                                 userInfoEndpoint.oidcUserService(customOidcUserService)
                         )
 
-                       .defaultSuccessUrl("https://localhost:3000/")
+                        .defaultSuccessUrl(String.format("%s/home",url))
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/api/logout") // URL для выхода
-                        .logoutSuccessUrl("https://localhost:3000/login") // URL после успешного выхода
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl(String.format("%s/login",url))
                         .permitAll()
-                );
+                ) .addFilterBefore(sameSiteCookieFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -102,15 +97,7 @@ public class Configuration1{
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(@NonNull CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("https://localhost:3000").allowCredentials(true);
-            }
-        };
-    }
+
    /* @Bean
     public FilterRegistrationBean<SameSiteFilter> sameSiteFilter() {
         FilterRegistrationBean<SameSiteFilter> registrationBean = new FilterRegistrationBean<>();
@@ -118,46 +105,7 @@ public class Configuration1{
         registrationBean.addUrlPatterns("/*");
         return registrationBean;
     }*/
-    @Bean
-    public CookieSameSiteSupplier applicationCookieSameSiteSupplier() {
-        return CookieSameSiteSupplier.ofStrict().whenHasName("JSESSIONID");
-    }
-    @Bean
-    CorsFilter corsFilter() {
-        // Источник конфигураций CORS
-        var corsConfigurationSource = new UrlBasedCorsConfigurationSource();
-        // Конфигурация CORS
-        var globalCorsConfiguration = new CorsConfiguration();
 
-        // Разрешаются CORS-запросы:
-
-        globalCorsConfiguration.addAllowedOrigin("https://localhost:3000");
-
-        globalCorsConfiguration.addAllowedHeader(HttpHeaders.AUTHORIZATION);
-        globalCorsConfiguration.addAllowedHeader("X-CUSTOM-HEADER");
-        globalCorsConfiguration.addAllowedHeader("Access-Control-Allow-Origin");
-        globalCorsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
-        // - с передачей учётных данных
-        globalCorsConfiguration.setAllowCredentials(true);
-        // - с методами GET, POST, PUT, PATCH и DELETE
-        globalCorsConfiguration.setAllowedMethods(List.of(
-                HttpMethod.GET.name(),
-                HttpMethod.POST.name(),
-                HttpMethod.PUT.name(),
-                HttpMethod.PATCH.name(),
-                HttpMethod.DELETE.name(),
-                HttpMethod.OPTIONS.name()
-        ));
-
-        globalCorsConfiguration.setExposedHeaders(List.of("X-OTHER-CUSTOM-HEADER"));
-
-        globalCorsConfiguration.setMaxAge(Duration.ofSeconds(10));
-
-
-        corsConfigurationSource.registerCorsConfiguration("/**", globalCorsConfiguration);
-
-        return new CorsFilter(corsConfigurationSource);
-    }
 
 
 

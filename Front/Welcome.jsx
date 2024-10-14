@@ -69,9 +69,7 @@ const Welcome = () => {
         navigate('/login');
     };
 
-    const redirectToAll = () => {
-        navigate('/All');
-    };
+
 
     const redirectToProfile = () => {
         navigate('/profile');
@@ -107,9 +105,6 @@ const Welcome = () => {
             {/* Вставляем SlidingMenu и передаем туда список треков */}
             <SlidingMenu tracks={tracks} val ={inputValue}/>
 
-            <button className="All_button" onClick={redirectToAll}>
-                All
-            </button>
             <button className="top-left-button5" onClick={redirectToProfile}>
                 Профиль
             </button>

@@ -41,9 +41,12 @@ const Playlist = ({name}) => {
                   // Показываем реальные данные после загрузки
                   tracks.map((audio, index) => (
                       <li key={index} className="track-item1" onClick={() => handleClick(audio.id)}>
-                          <img className="track-image1" src={`data:image/jpeg;base64,${audio.imagesc}`}/>
+                          <img className="track-image1"
+                               src={`https://localhost:8080/api/likedPlaylist/images/${audio.id}`}/>
+                          <div className={`scattering ${isActive ? 'active' : ''}`}></div>
                           {audio.name}
                       </li>
+
                   ))
               ) : (
                   <li>Треки не найдены</li>

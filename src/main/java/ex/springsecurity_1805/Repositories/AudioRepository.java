@@ -4,7 +4,6 @@ import ex.springsecurity_1805.Models.Audio;
 
 import jakarta.transaction.Transactional;
 
-import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -33,8 +32,12 @@ public interface AudioRepository extends JpaRepository<Audio, Long> {
     List<Long> findPreviousFiveTracks(@Param("startId") Long startId);
 
     Optional<Audio> findTopByNameOrderByIdAsc(String name);
+    @Query("SELECT t.id, t.name FROM Audio t WHERE t.id IN :ids")
+    List<Object[]> findTrackNamesById(@Param("ids") List<Long> ids);
 
-    @NonNull List<Audio> findAllById(@NonNull Iterable<Long> ids);
+    @Query("SELECT t.imagesc FROM Audio t WHERE t.id IN :ids")
+    byte[] findTrackImagesById(@Param("ids") Long ids);
+
 
 
 

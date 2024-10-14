@@ -5,7 +5,7 @@ import { BiSkipNext, BiSkipPrevious } from 'react-icons/bi';
 import { IconContext } from 'react-icons';
 import { MyContext } from "./HelperModuls/ContextForAudio";
 import { Howl, Howler } from 'howler';
-import {SiTruenas} from "react-icons/si"; // Импортируем Howler
+
 
 const AudioPlayer = ({ audioData }) => {
     const [userTrack, setUserTrack] = useState(152);

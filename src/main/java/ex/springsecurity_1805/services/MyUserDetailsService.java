@@ -19,6 +19,7 @@ public class MyUserDetailsService  implements UserDetailsService {
     private UserRepository repository;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        System.out.println("good auth");
         Optional<Usermain> user = repository.findByName(username);
         return user.map(UserDEtailsService::new)
                 .orElseThrow(()->new UsernameNotFoundException(" ${username}not found"));

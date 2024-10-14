@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+/*import React, { useEffect, useState } from 'react';
 import './Styles/ID.css'; // Импортируйте CSS файл
 import { useNavigate } from "react-router-dom";
 import './Styles/All.css';
@@ -81,4 +81,4 @@ const All = () => {
     );
 };
 
-export default All;
+export default All;*/

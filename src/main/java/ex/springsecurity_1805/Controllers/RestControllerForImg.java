@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.ByteArrayInputStream;
 import java.util.Optional;
-@CrossOrigin(origins="https://localhost:3000/profile",allowCredentials = "true")
+
 @RestController
 @RequiredArgsConstructor
 public class RestControllerForImg {

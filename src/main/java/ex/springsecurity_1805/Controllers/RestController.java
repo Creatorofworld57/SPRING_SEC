@@ -11,6 +11,8 @@ import ex.springsecurity_1805.services.UserDEtailsService;
 
 import lombok.AllArgsConstructor;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,14 +33,16 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 
-@CrossOrigin(origins="https://localhost:3000",allowCredentials = "true")
+
 @org.springframework.web.bind.annotation.RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/api")
 public class RestController {
-    private UserRepository rep;
-    private ServiceApp serviceApp;
-    private TrailerRepository trailerRepository;
+    private final  UserRepository rep;
+    private final ServiceApp serviceApp;
+    private final  TrailerRepository trailerRepository;
+    @Value("${urlFront}")
+    String url;
 
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -78,6 +82,7 @@ public class RestController {
 
     }
     @Async
+   // @CrossOrigin(origins="http://130.193.62.14/",allowCredentials = "true")
     @GetMapping("/authorization")
     public CompletableFuture<Mono<ResponseEntity<?>>> doYouHaveAuth(@AuthenticationPrincipal UserDEtailsService user, @AuthenticationPrincipal OAuth2User principal) throws IOException {
 
@@ -109,7 +114,7 @@ public class RestController {
 
     }
     // Проверка на наличие имени в бд при регистрации
-    @CrossOrigin(origins="https://localhost:3000",allowCredentials = "true")
+
     @PostMapping("/checking")
     public ResponseEntity<?> checkUserName(@RequestBody Data data) {
         System.out.println(data.getName() + " существует");

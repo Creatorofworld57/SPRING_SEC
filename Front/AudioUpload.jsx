@@ -42,7 +42,7 @@ export const AudioUpload =()=>{
                 </div>
 
             </form>
-            <button className="Back" onClick={() => navigate('/')}>Назад</button>
+            <button className="Back" onClick={() => navigate('/home')}>Назад</button>
             <button id="but"  type="submit" onClick={handleSubmit}>Send</button>
         </div>
     );

@@ -49,12 +49,12 @@ public class RestControllerForAudio {
 
     @PostMapping("/audio")
     public void audioSend(@RequestParam("file") MultipartFile file) throws IOException {
-        BackgroundImage backgroundImage = new BackgroundImage();
+        /*BackgroundImage backgroundImage = new BackgroundImage();
         backgroundImage.setImage(file.getBytes());
         backgroundImage.setSize(file.getSize());
         backgroundImage.setContentType(file.getContentType());
-        backImageRepository.save(backgroundImage);
-       /* Audio audio = new Audio();
+        backImageRepository.save(backgroundImage);*/
+        Audio audio = new Audio();
 
         StringBuilder str = new StringBuilder(Objects.requireNonNull(file.getOriginalFilename()));
         str.delete(str.indexOf("."), str.lastIndexOf("3") + 1);
@@ -65,7 +65,7 @@ public class RestControllerForAudio {
         audio.setContentType(file.getContentType());
         audio.setSize(file.getSize());
         audioRepository.save(audio);
-        System.out.println(audio.getId());*/
+        System.out.println(audio.getId());
 
     }
     @GetMapping("/background/{id}")
@@ -110,7 +110,7 @@ public class RestControllerForAudio {
 
     }
 
-    @CrossOrigin(origins = "https://localhost:3000/audio_playlist", allowCredentials = "true")
+
     @GetMapping("/playList")
     public List<String> playList(@AuthenticationPrincipal UserDEtailsService user1) {
         return new ArrayList<>(audioRepository.findAllByOrderByIdAsc());
