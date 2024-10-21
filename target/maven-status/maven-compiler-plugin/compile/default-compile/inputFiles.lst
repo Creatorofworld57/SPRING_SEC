@@ -23,8 +23,11 @@ C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecuri
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\services\MyUserDetailsService.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Models\Socials.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Controllers\RestControllerForUserCRUD.java
+<<<<<<< HEAD
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Models\AudioShort.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Repositories\BackImageRepository.java
+=======
+>>>>>>> 28f0fe1eeab61e9b089570a81e3064ad1acdb625
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\services\RedisService.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Models\updateModel.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\services\AlgorithmsOfRecomendations.java
@@ -35,6 +38,9 @@ C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecuri
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\RedisRepositories\AudioRedisRepository.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Repositories\UserRepository.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Repositories\PlaylistRepository.java
+<<<<<<< HEAD
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Models\BackgroundImage.java
+=======
+>>>>>>> 28f0fe1eeab61e9b089570a81e3064ad1acdb625
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Config\Configuration1.java
 C:\Users\dimu2\Java\SpringSecurity_1805\SPRING_SEC\src\main\java\ex\springsecurity_1805\Config\CorsConfig.java

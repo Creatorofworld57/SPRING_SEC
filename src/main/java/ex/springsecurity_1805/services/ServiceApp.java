@@ -1,11 +1,22 @@
 package ex.springsecurity_1805.services;
 
+<<<<<<< HEAD
 import ex.springsecurity_1805.Models.*;
+=======
+import com.fasterxml.jackson.annotation.JsonView;
+import com.github.javafaker.Faker;
+import ex.springsecurity_1805.Models.*;
+import ex.springsecurity_1805.Repositories.AudioRepository;
+>>>>>>> 28f0fe1eeab61e9b089570a81e3064ad1acdb625
 import ex.springsecurity_1805.Repositories.ImageRepository;
 import ex.springsecurity_1805.Repositories.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+<<<<<<< HEAD
+=======
+import org.springframework.cache.annotation.Cacheable;
+>>>>>>> 28f0fe1eeab61e9b089570a81e3064ad1acdb625
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -13,6 +24,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+<<<<<<< HEAD
+=======
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+>>>>>>> 28f0fe1eeab61e9b089570a81e3064ad1acdb625
 
 
 @Service
@@ -25,6 +41,22 @@ public class ServiceApp {
 
 
 
+<<<<<<< HEAD
+=======
+    public Application applicationById(int id) {
+
+        return applicationList.stream()
+                .filter(app -> app.getId() == id)
+                .findFirst().orElse(null);
+    }
+
+
+    public Application applicationByName(String name) {
+        return applicationList.stream()
+                .filter(app -> Objects.equals(app.getName(), name))
+                .findFirst().orElse(null);
+    }
+>>>>>>> 28f0fe1eeab61e9b089570a81e3064ad1acdb625
 
     public void addUser(HttpServletRequest request, MultipartFile file) throws IOException {
         Img img = new Img();
@@ -156,6 +188,17 @@ public class ServiceApp {
 
 
 
+<<<<<<< HEAD
+=======
+    public void audioKeep(MultipartFile file) throws IOException {
+        Audio audio = new Audio();
+        audio.setBuffer(file.getBytes());
+        audio.setName(file.getOriginalFilename());
+        audio.setContentType(file.getContentType());
+        audio.setSize(file.getSize());
+        audioRepository.save(audio);
+    }
+>>>>>>> 28f0fe1eeab61e9b089570a81e3064ad1acdb625
 
     public void newUserWithOAuth(OAuth2User principal) throws IOException {
         Usermain usermain = new Usermain();
@@ -184,6 +227,22 @@ public class ServiceApp {
         repository.save(user1);
     }
 
+<<<<<<< HEAD
 
+=======
+  public List<Audio>searchTrackFromBD(String name) {
+       List<Audio> list = audioRepository.findByNameContainingIgnoreCase(name);
+       if(list.isEmpty()){
+           String translate =ServiceHelperFunctions.KeyboardLayoutConverter.convertToEnglish(name);
+          list = audioRepository.findByNameContainingIgnoreCase(translate);
+          return  list.stream()
+                   .sorted(Comparator.comparingInt(audio -> ServiceHelperFunctions.levenshteinDistance(audio.getName(),translate ))).collect(Collectors.toList());
+       }
+
+      return  list.stream()
+              .sorted(Comparator.comparingInt(audio -> ServiceHelperFunctions.levenshteinDistance(audio.getName(), name))).collect(Collectors.toList());
+  }
+
+>>>>>>> 28f0fe1eeab61e9b089570a81e3064ad1acdb625
 
 }

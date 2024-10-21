@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:16
@@ -16,9 +14,18 @@ services:
     ports:
       - "6379:6379"  # Проброс порта на хост
     restart: always
+  app-3:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    restart: always
 
   app-1:
+<<<<<<< HEAD
     image: mainconstructor/spring_sec:latest
+=======
+    image: sping_sec
+>>>>>>> 28f0fe1eeab61e9b089570a81e3064ad1acdb625
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/UsersInSystem
       SPRING_DATASOURCE_USERNAME: postgres
@@ -37,3 +44,11 @@ services:
       - app-1
     restart: always
 
+<<<<<<< HEAD
+=======
+
+
+
+
+  
+>>>>>>> 28f0fe1eeab61e9b089570a81e3064ad1acdb625
