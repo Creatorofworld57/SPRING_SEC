@@ -1,10 +1,8 @@
 package ex.springsecurity_1805.services;
 
-import com.github.javafaker.Faker;
 import ex.springsecurity_1805.Models.*;
 import ex.springsecurity_1805.Repositories.ImageRepository;
 import ex.springsecurity_1805.Repositories.UserRepository;
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -15,19 +13,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 
 @Service
 @AllArgsConstructor
 public class ServiceApp {
-
+    private List<Application> applicationList;
     private UserRepository repository;
     private PasswordEncoder passwordEncoder;
     private ImageRepository imageRepository;
-
-
 
 
 
@@ -163,7 +157,6 @@ public class ServiceApp {
 
 
 
-
     public void newUserWithOAuth(OAuth2User principal) throws IOException {
         Usermain usermain = new Usermain();
         Object SocialValue = principal.getAttributes().get("html_url");
@@ -190,7 +183,6 @@ public class ServiceApp {
         //user1.setPreviewImageId(img1.getId());
         repository.save(user1);
     }
-
 
 
 

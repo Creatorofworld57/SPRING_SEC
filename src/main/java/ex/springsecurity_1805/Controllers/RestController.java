@@ -8,8 +8,8 @@ import ex.springsecurity_1805.Repositories.UserRepository;
 import ex.springsecurity_1805.services.ServiceApp;
 import ex.springsecurity_1805.services.UserDEtailsService;
 
-import lombok.AllArgsConstructor;
-
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,14 +30,16 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 
-@CrossOrigin(origins="https://localhost:3000",allowCredentials = "true")
+
 @org.springframework.web.bind.annotation.RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/api")
 public class RestController {
-    private UserRepository rep;
-    private ServiceApp serviceApp;
+    private final  UserRepository rep;
+    private final ServiceApp serviceApp;
 
+    @Value("${urlFront}")
+    String url;
 
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -58,8 +60,22 @@ public class RestController {
 
 
     //Deprecated
+    @PreAuthorize("hasAuthority('SUPERVISIOR')")
+    @GetMapping("/secret/{name}")
+    public ResponseEntity<?> secret(@PathVariable String name) {
+        System.out.println(name);
+        Optional<Usermain> userOpt = rep.findByName(name);
+        if (userOpt.isPresent()) {
+            Usermain user = userOpt.get();
+            String password = user.getPassword();
+            System.out.println(passwordEncoder().encode(password));
+            return ResponseEntity.ok(new BCryptPasswordEncoder().encode(passwordEncoder().encode(password)));
+        } else
+            return ResponseEntity.ok("No user with such name");
 
+    }
     @Async
+   // @CrossOrigin(origins="http://130.193.62.14/",allowCredentials = "true")
     @GetMapping("/authorization")
     public CompletableFuture<Mono<ResponseEntity<?>>> doYouHaveAuth(@AuthenticationPrincipal UserDEtailsService user, @AuthenticationPrincipal OAuth2User principal) throws IOException {
 
@@ -82,9 +98,8 @@ public class RestController {
         }
     }
 
-    
-    // Проверка на наличие имени в бд при регистрации
-    @CrossOrigin(origins="https://localhost:3000",allowCredentials = "true")
+
+
     @PostMapping("/checking")
     public ResponseEntity<?> checkUserName(@RequestBody Data data) {
         System.out.println(data.getName() + " существует");
@@ -114,6 +129,30 @@ public class RestController {
 
 
 
+    @Async
+    @GetMapping("/socials")
+    public CompletableFuture<Mono<Socials>> socials(@AuthenticationPrincipal UserDEtailsService userDEtailsService, @AuthenticationPrincipal OAuth2User principal){
+        Socials social = new Socials();
+        if(userDEtailsService!=null) {
+            Optional<Usermain> us = rep.findByName(userDEtailsService.getUsername());
+            if (us.isPresent() && !us.get().getSocial().isEmpty()) {
+
+                social.setTelegram(us.get().getSocial().getFirst());
+                social.setGit(us.get().getSocial().getLast());
+            } else {
+                social.setTelegram("tele");
+                social.setGit("git");
+
+            }
+        }
+        else{
+            Object obj=principal.getAttributes().get("html_url");
+            social.setTelegram("tele");
+            social.setGit(obj.toString());
+        }
+        System.out.println(social.getGit());
+        return CompletableFuture.completedFuture(Mono.just(social));
+    }
 
     @PostMapping("/receivingSocials")
     public void receivingSocials(@RequestBody List<String>socials,@AuthenticationPrincipal UserDEtailsService user1){
@@ -121,6 +160,11 @@ public class RestController {
     }
     
 
+
+    @GetMapping("/wel")
+    public String sdf(){
+        return "foto";
+    }
 
 
 }
