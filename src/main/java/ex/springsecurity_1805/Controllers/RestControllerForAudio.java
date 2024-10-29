@@ -2,6 +2,7 @@ package ex.springsecurity_1805.Controllers;
 
 
 import com.fasterxml.jackson.annotation.JsonView;
+import ex.springsecurity_1805.Algorithms.SpectralAnalysis;
 import ex.springsecurity_1805.Models.Audio;
 import ex.springsecurity_1805.Models.BackgroundImage;
 import ex.springsecurity_1805.Models.Usermain;
@@ -10,6 +11,7 @@ import ex.springsecurity_1805.Models.Views;
 import ex.springsecurity_1805.Repositories.AudioRepository;
 import ex.springsecurity_1805.Repositories.BackImageRepository;
 import ex.springsecurity_1805.Repositories.UserRepository;
+import ex.springsecurity_1805.services.RecommendationService;
 import ex.springsecurity_1805.services.RedisService;
 import ex.springsecurity_1805.services.UserDEtailsService;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +25,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 @EnableWebMvc
 @RestController
@@ -39,8 +43,9 @@ public class RestControllerForAudio {
 
 
     @GetMapping("/audio/{id}")
-    public ResponseEntity<?> getAudio(@PathVariable Long id) {
+    public ResponseEntity<?> getAudio(@PathVariable Long id) throws UnsupportedAudioFileException, IOException {
         Audio audio = service.getAudioById(id);
+        System.out.println("audio");
         return ResponseEntity.ok()
                 .contentType(MediaType.valueOf(audio.getContentType()))
                 .contentLength(audio.getSize())
@@ -55,7 +60,6 @@ public class RestControllerForAudio {
         backgroundImage.setContentType(file.getContentType());
         backImageRepository.save(backgroundImage);*/
         Audio audio = new Audio();
-
         StringBuilder str = new StringBuilder(Objects.requireNonNull(file.getOriginalFilename()));
         str.delete(str.indexOf("."), str.lastIndexOf("3") + 1);
 
@@ -136,6 +140,13 @@ public class RestControllerForAudio {
         Usermain user = userRepository.findByName(userDetails.getUsername()).get();
         user.setLastTrack(id);
         userRepository.save(user);
+    }
+    @GetMapping("/random_audio")
+    public int random_audio() {
+        int[] numbers = audioRepository.findAllIds(); // Ваш массив чисел
+        int randomIndex = ThreadLocalRandom.current().nextInt(numbers.length); // Генерация случайного индекса
+        return numbers[randomIndex]; // Получаем случайный элемент
+
     }
 
 }

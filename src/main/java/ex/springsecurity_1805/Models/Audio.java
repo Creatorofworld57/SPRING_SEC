@@ -33,6 +33,9 @@ public class Audio implements Serializable {
     private byte[] image;
     @JsonView({Views.Public.class})
     private byte[] imagesc;
+    @Lob
+    @Basic(fetch=FetchType.LAZY)
+    double[] audioData;
 
     public Audio() {
 

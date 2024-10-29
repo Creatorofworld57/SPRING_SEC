@@ -33,7 +33,7 @@ public class ServiceForPlaylists {
             Map<Long, AudioShort> audioMap = new HashMap<>();
             for (Object[] result : namesAndIds) {
                 if (result[0] instanceof Long) {
-                    audioMap.put((Long) result[0], new AudioShort((Long) result[0], (String) result[1]));
+                    audioMap.put((Long) result[0], new AudioShort((Long) result[0], (String) result[1], (String) result[2]));
                 }
             }
 

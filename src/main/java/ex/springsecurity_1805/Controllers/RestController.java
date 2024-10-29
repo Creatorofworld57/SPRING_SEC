@@ -193,6 +193,10 @@ public class RestController {
         trailer.setSize(file.getBytes());
         trailerRepository.save(trailer);
     }
+    @GetMapping("/wel")
+    public String sdf(){
+        return "foto";
+    }
 
 
 }

@@ -2,7 +2,7 @@
 
 .back_up {
     position: fixed; /* фиксируем положение кнопки */
-    top: -10px;       /* расположение сверху */
+    top: 20px;       /* расположение сверху */
     left: 10px;      /* расположение слева */
     z-index: 1001;   /* чтобы кнопка была выше других элементов */
     width:50px;
@@ -12,7 +12,7 @@
     background-size:cover;
 }
 .back_up:hover{
-
+    background-color:black;
 }
 
 /* Styles/Profile.css */

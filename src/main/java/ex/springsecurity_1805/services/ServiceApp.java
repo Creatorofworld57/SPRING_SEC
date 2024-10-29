@@ -229,10 +229,10 @@ public class ServiceApp {
     }
 
   public List<Audio>searchTrackFromBD(String name) {
-       List<Audio> list = audioRepository.findByNameContainingIgnoreCase(name);
+       List<Audio> list = audioRepository.searchByTitleOrAuthor(name);
        if(list.isEmpty()){
            String translate =ServiceHelperFunctions.KeyboardLayoutConverter.convertToEnglish(name);
-          list = audioRepository.findByNameContainingIgnoreCase(translate);
+          list = audioRepository.searchByTitleOrAuthor(translate);
           return  list.stream()
                    .sorted(Comparator.comparingInt(audio -> ServiceHelperFunctions.levenshteinDistance(audio.getName(),translate ))).collect(Collectors.toList());
        }

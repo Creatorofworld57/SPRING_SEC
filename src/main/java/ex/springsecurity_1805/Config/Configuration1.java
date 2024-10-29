@@ -39,7 +39,7 @@ public class Configuration1{
         UserDetails admin2 = User.builder().username("admin2").password(encoder.encode("18")).roles("USER").build();*/
      return new MyUserDetailsService(repository);
     }
-    private final SameSiteCookieFilter sameSiteCookieFilter;
+
 
     @Bean
     public AudioRepository audioRepository () {
@@ -53,11 +53,11 @@ public class Configuration1{
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("api/login", "/api/audio/**", "/api/audioName/**", "api/authorization", "/api/checking",
-                                "/api/uploadTrailer", "login/oauth2/authorization/github",
-                                "/login/oauth2/git", "/login/oauth2/code/github", "/api/audioCount",
-                                "/api/user/withGithub/{id}", "/api/searchOfTrack/{name}",
-                                "/api/background/**", "/api/nextAudios").permitAll()
+                        .requestMatchers("api/login", "api/authorization", "/api/checking",
+                                 "login/oauth2/authorization/github",
+                                "/login/oauth2/git", "/login/oauth2/code/github",
+                                "/api/user/withGithub/{id}",
+                                "/api/background/**","/api/wel").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/user").permitAll()// Разрешить доступ без аутентификации
                         .requestMatchers("/newUser").anonymous() // Доступно только анонимным пользователям
                         .requestMatchers("/api/**").authenticated()
@@ -68,7 +68,7 @@ public class Configuration1{
                 .formLogin(formLogin -> formLogin
                         .loginPage(String.format("%s/login", url))
                         .loginProcessingUrl("/perform_login") // URL для обработки логина
-                        .defaultSuccessUrl(String.format("%s/home",url))
+                        .defaultSuccessUrl(String.format("%s/home",url),true)
                         // URL после успешного логина
                         .failureUrl(String.format("%s/login",url))
                         // URL после неудачного логина
@@ -86,7 +86,7 @@ public class Configuration1{
                         .logoutUrl("/logout")
                         .logoutSuccessUrl(String.format("%s/login",url))
                         .permitAll()
-                ) .addFilterBefore(sameSiteCookieFilter, UsernamePasswordAuthenticationFilter.class);
+                );
 
         return http.build();
     }

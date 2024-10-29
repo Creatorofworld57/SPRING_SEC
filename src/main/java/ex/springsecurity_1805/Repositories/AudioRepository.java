@@ -21,7 +21,13 @@ public interface AudioRepository extends JpaRepository<Audio, Long> {
     @Query("SELECT e.name FROM Audio e ORDER BY e.id ASC")
     List<String> findAllByOrderByIdAsc();
 
-    List<Audio> findByNameContainingIgnoreCase(String title); // Поиск названий, которые содержат введенную подстроку
+
+
+        @Query("SELECT a FROM Audio a WHERE LOWER(a.name) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR LOWER(a.Author) LIKE LOWER(CONCAT('%', :searchQuery, '%'))")
+        List<Audio> searchByTitleOrAuthor(@Param("searchQuery") String searchQuery);
+
+
+
 
     Optional<Audio> findAudioByName(String name);
 
@@ -32,11 +38,14 @@ public interface AudioRepository extends JpaRepository<Audio, Long> {
     List<Long> findPreviousFiveTracks(@Param("startId") Long startId);
 
     Optional<Audio> findTopByNameOrderByIdAsc(String name);
-    @Query("SELECT t.id, t.name FROM Audio t WHERE t.id IN :ids")
+    @Query("SELECT t.id, t.name, t.Author FROM Audio t WHERE t.id IN :ids")
     List<Object[]> findTrackNamesById(@Param("ids") List<Long> ids);
 
     @Query("SELECT t.imagesc FROM Audio t WHERE t.id IN :ids")
     byte[] findTrackImagesById(@Param("ids") Long ids);
+
+    @Query("SELECT id FROM Audio")
+    int[] findAllIds();
 
 
 
